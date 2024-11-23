@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Collective Filter by Takens Theorem</title>
+    <link rel="stylesheet" href="css/bulma.min.css">
+    <link rel="stylesheet" href="css/animate.min.css">
+    <script src="js/math.js" type="text/javascript"></script>
+    <script src="js/spar2.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/spar2.css">
+</head>
+
+<body>
+
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <img src="images/sitelogo.png" style="width:50%;" /><br />
+                <h1 class="title has-text-white">Collective Filter 🔍</h1>
+                <a href="#suggest" class="main-nav button is-medium margin-bottom">Try</a>
+                <a href="#credits" class="main-nav button is-medium margin-bottom">FAQs</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="hero is-fullheight" id="suggest">
+        <div class="section fixed-grid has-2-cols">
+            <div class="grid">
+                <div class="cell">
+                    <div class="container">
+                        <p class="content is-primary is-large has-text-white">
+                            Select
+                            <span class="tag is-small" onclick="" title="# unique owners in snapshot"><span
+                                    id="count_badge">0</span>&nbsp;selected</span>
+                            <span class="tag is-small is-danger pointer" onclick="javascript:resetChosen();"
+                                title="# unique owners in snapshot">reset</span>
+                        </p>
+                        <button class="button ud margin-bottom is-small" onclick="javascript:udRes('uniq_owners');"
+                            title="# unique owners in snapshot" id="uniq_owners_btn">UO</button>
+                        <button class="button ud margin-bottom is-small" onclick="javascript:udRes('n_txs');"
+                            title="# txs in snapshot" id="n_txs_btn">TX</button>
+                        <button class="button ud margin-bottom is-small" onclick="javascript:udRes('connection');"
+                            title="total connectedness in statistical model" id="connection_btn">CX</button>
+                        <button class="button ud margin-bottom is-small" onclick="javascript:udRes('ts');"
+                            title="by most recent in snapshot" id="ts_btn">DT</button>
+                        <button class="button ud margin-bottom is-small" onclick="javascript:udRes('g1');"
+                            title="those in group 1 in model" id="g1_btn">G1</button>
+                        <button class="button ud margin-bottom is-small" onclick="javascript:udRes('g2');"
+                            title="those in group 2 in model" id="g2_btn">G2</button>
+                        <button class="button ud margin-bottom is-small" onclick="javascript:udRes('g3');"
+                            title="those in group 3 in model" id="g3_btn">G3</button>
+                        <button class="button ud margin-bottom is-small" onclick="javascript:udRes('lucky');"
+                            title="shuffle!" id="lucky_btn">feel lucky?</button>
+                        <input class="input is-info" id="search_txt" autocomplete="off" type="text"
+                            placeholder="search by name, hit enter" />
+                        <div id="result_div"></div>
+                    </div>
+                </div>
+                <div class="cell">
+                    <p class="content is-primary is-large has-text-white">
+                        Suggest
+                        <span class="tag margin-bottom is-small" onclick="">
+                            Output based on limited snapshot.
+                    </p>
+                    </span>
+                    <div style="display:flex;align-items:center;">
+                        <label class="is-small" for="temperature" style="margin-right: 10px;">&#127777;</label>
+                        <input type="range" title="Temperature: random impulses to shake up the suggestions"
+                            id="temperature" min="0" max="1" value="0" step=".001"
+                            onchange="setOption('temperature',this.value);" style="width:100%;">
+                    </div>
+                    <article class="panel">
+                        <a class="panel-block is-active">
+                            <div class="container">
+                                <div id="output_content">
+                                    <em><br />&larr; select some projects...</em><br /><br />
+                                </div>
+                            </div>
+                        </a>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="modal_options" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Options</p>
+                <button class="delete" onclick="closeModal();" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <label for="temperature">Temperature</label>
+                <input type="range" style="width:100%;" onchange="setOption('temperature',this.value);" id="temperature"
+                    min="0" max="100" value="0">
+            </section>
+            <footer class="modal-card-foot">
+                <div class="buttons">
+                    <button class="button" onclick="closeModal();">Close</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal_project" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p id="modal_title" class="modal-card-title">Modal title</p>
+                <button class="delete" onclick="closeModal();" aria-label="close"></button>
+            </header>
+            <section id="modal_content" class="modal-card-body">
+            </section>
+            <footer class="modal-card-foot">
+                <div class="buttons">
+                    <button class="button" onclick="closeModal();">Close</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <section class="hero is-fullheight" id="credits">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="content is-large is-primary has-text-white">FAQs, etc.</h1>
+                <div>
+                    <h6 class="subtitle is-5"><b>NB</b>: Collective Filter is a preliminary data 🧪 experiment.</h6>
+                    <h6 class="subtitle is-5">It takes input of selected NFT projects, and suggests others.</h6>
+                    <h6 class="subtitle is-5">How does it work?</h6>
+                    <div class="box">Collective Filter uses a statistical model built from transaction data to suggest
+                        new NFT projects.
+                        It's built from a subset of data, just a snapshot so <strong>it won't have all your favorite
+                            projects</strong>. Using
+                        this data snapshot, the
+                        model maps your selected interests to other projects. These suggested projects
+                        reflect collective activity of other collectors. <strong>Credits</strong>:
+                        Data from <a target="_blank" href="https://etherscan.io/">Etherscan</a>, <a
+                            href="https://opensea.io">OpenSea</a>.
+                        Statistical modeling by <a target="_blank" href="https://twitter.com/takenstheorem">Takens
+                            Theorem</a>.
+                        Some delightful goodies by <a target="_blank" href="https://bulma.io/">Bulma</a>,
+                        <a target="_blank" href="https://mathjs.org/">math.js</a>,
+                        <a target="_blank" href="https://animate.style/">Animate.css</a>.
+                    </div>
+
+                    <h6 class="subtitle is-5">How do I use it?</h6>
+                    <div class="box">
+                        To start, click the buttons below "Select." You can mouseover these buttons to get
+                        a quick description. For example, 'tx' lists projects by transactions in the current
+                        data snapshot that "Collective Filter" is using. When the left side populates with
+                        projects, you can select them with the plus button. This immediately generates suggestions
+                        at the right.<br /><br />
+
+                        That's it. Just click around.<br /><br />
+
+                        A few other notes. You can exclude projects from your use by clicking the red button on
+                        the bottom right of the results. You can also click on various explorers for the projects
+                        as shown in the small button icons. There are a few other details,
+                        feel free to click around and see.
+                    </div>
+
+                    <h6 class="subtitle is-5">Is this any good?</h6>
+                    <div class="box">
+                        <strong>This is a little experiment</strong>. Collective Filter uses a snapshot of NFT
+                        transaction data to
+                        build a statistical model.
+                        I did little to no direct curation of the output. Sometimes Collective Filter may work quite
+                        well,
+                        sometimes results might surprise.
+                        Importantly I welcome <a target="_blank" href="https://x.com/takenstheorem">feedback here</a>!
+
+                        Warning: Creators and collectors may be disappointed by the output.
+                        But in blockchain, connections across favorite projects are subject to data
+                        trends not under our control. Sometimes the model will err. Other times, it will
+                        surprise with an unwelcome reality.
+                    </div>
+
+                    <h6 class="subtitle is-5">What about next features?</h6>
+                    <div class="box">
+                        I have many updates already coded up. These include NFT projects on other chains,
+                        different statistical models and more. If you have favored improvements or suggestions,
+                        I very much welcome them <a target="_blank" href="https://x.com/takenstheorem">here</a>. If
+                        you'd like
+                        to encourage me to keep going feel free to
+                        <a target="_blank"
+                            href="https://etherscan.io/address/0x295cf39d923bc491e138ab5f7f1c570d4732b5a1">donate
+                            here</a>
+                        or pick up a primary item from
+                        my other <a target="_blank"
+                            href="https://opensea.io/takenstheorem/created?search[toggles][0]=IS_LISTED">creative
+                            projects</a>.
+                    </div>
+
+                    <h6 class="subtitle is-5"><strong>Disclaimer: Collective Filter is a toy, an experiment, for fun. It
+                            should not be
+                            regarded as an oracle for any good advice, whether financial or aesthetic or
+                            dietary.</strong></h6>
+
+                    <h6 class="subtitle is-5">This project has no mint.</h6>
+
+                    <h6 class="subtitle is-5">It's just curious data.</h6>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.getElementById('search_txt').addEventListener('keydown', () => {
+            udRes('search');
+        });
+        document.getElementById('result_div').addEventListener('click', (event) => {
+            if (event.target.classList.contains('add-btn')) {
+                toggleList(event.target.attributes.data.value);
+                event.target.parentElement.style.backgroundColor = "#112255";
+                event.target.style.display = 'none';
+            }
+            if (event.target.classList.contains('proj-logo')) {
+                showModal(event.target);
+            }
+            if (event.target.classList.contains('x-btn')) {
+                exclude(event.target.attributes.data.value);
+                desc = !desc;
+                udRes(curclick);
+                if (Object.keys(chosen).length > 0) {
+                    chosen[event.target.attributes.data.value] = false;
+                    toggleList();
+                }
+            }
+        });
+        document.getElementById('output_content').addEventListener('click', (event) => {
+            if (event.target.classList.contains('add-btn')) {
+                toggleList(event.target.attributes.data.value);
+                event.target.parentElement.style.backgroundColor = "#112255";
+                event.target.style.display = 'none';
+                desc = !desc;
+                udRes(curclick);
+            }
+            if (event.target.classList.contains('proj-logo')) {
+                showModal(event.target);
+            }
+            if (event.target.classList.contains('x-btn')) {
+                exclude(event.target.attributes.data.value);
+                desc = !desc;
+                udRes(curclick);
+                toggleList();
+            }
+        });
+        const navbarLinks = document.querySelectorAll('.main-nav');
+        navbarLinks.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });            
+    </script>
+</body>
+
+</html>

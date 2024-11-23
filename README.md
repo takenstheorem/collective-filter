@@ -1,2 +1,3 @@
 # collective-filter
- Data-driven NFT project suggestions
+
+[takenstheorem.github.io/collective-filter](https://takenstheorem.github.io/collective-filter)
