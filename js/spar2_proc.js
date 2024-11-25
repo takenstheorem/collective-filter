@@ -179,7 +179,7 @@ function getImage(project) {
             return "images/ab.png";
         } else {
             for (i = 0; i < projects.length; i++) {
-                if (project.name == projects[i].name) {
+                if (project.name == projects[i].name && project.address != projects[i].address) {
                     return projects[i].img;
                 }
             }

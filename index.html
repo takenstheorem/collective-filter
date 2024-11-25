@@ -101,20 +101,20 @@
             <div class="container">
                 <h1 class="content is-large is-primary has-text-white">FAQs, etc.</h1>
                 <div>
-                    <h6 class="subtitle is-5"><b>NB</b>: Collective Filter is a preliminary data 🧪 experiment.</h6>
+                    <h6 class="subtitle is-5"><strong>Note: Collective Filter is an early version data 🧪 experiment</strong>.</h6>
                     <h6 class="subtitle is-5">It takes input of selected NFT projects, and suggests others.</h6>
 
                     <h6 class="subtitle is-5">How does it work?</h6>
                     <div class="box">Collective Filter uses a statistical model built from transaction data to suggest
-                        new NFT projects.
-                        It's built from a subset of data, just a snapshot so <strong>it won't have all your favorite
+                        other NFT projects.
+                        <strong>It's built from a subset of data, just a snapshot, so it won't have all your favorite
                             projects. Currently, it only contains data from Ethereum mainnet</strong>. Using
                         this data snapshot, the
                         model maps your selected interests to other projects. These suggested projects
-                        reflect collective activity of other collectors. <strong>Credits</strong>:
+                        reflect collective activity of other collectors. Credits:
                         Data from <a target="_blank" href="https://etherscan.io/">Etherscan</a>, <a
                             href="https://opensea.io">OpenSea</a>.
-                        Statistical modeling by <a target="_blank" href="https://twitter.com/takenstheorem">Takens
+                        Statistical modeling &amp; coding by <a target="_blank" href="https://twitter.com/takenstheorem">Takens
                             Theorem</a>.
                         Some delightful goodies by <a target="_blank" href="https://bulma.io/">Bulma</a>,
                         <a target="_blank" href="https://mathjs.org/">math.js</a>,
@@ -125,11 +125,9 @@
                     <div class="box">
                         To start, click the buttons below "Select." You can mouseover these buttons to get
                         a quick description. For example, 'tx' lists projects by transactions in the current
-                        data snapshot that "Collective Filter" is using. When the left side populates with
+                        data snapshot. When the left side populates with
                         projects, you can select them with the plus button. This immediately generates suggestions
-                        at the right.<br /><br />
-
-                        That's it. Just click around.<br /><br />
+                        at the right. That's it! Feel free to click around.<br /><br />
 
                         A few other notes. You can exclude projects from your use by clicking the red button on
                         the bottom right of the results. You can also click on various explorers for the projects
@@ -169,6 +167,17 @@
                             projects</a>.
                     </div>
 
+                    <h6 class="subtitle is-5">Are you advertising or boosting?</h6>
+                    <div class="box">
+                        In short, no, not at all. The model uses raw data and I do not highlight or transform
+                        the data with any specific goal other than to express the underlying collective trends.
+                        An important caveat though: Any model is based on a sample of data that I have collected by
+                        seeding this data with projects I've either collected or found interesting over the years. 
+                        For this reason, some projects may sometimes appear at the top more than others. This was
+                        not for the purpose of boosting, but reveals the creator's own interests. An important disclaimer
+                        to wrap up:
+                    </div>
+
                     <h6 class="subtitle is-5"><strong>Disclaimer: Collective Filter is a toy, an experiment, for fun. It
                             should not be
                             regarded as an oracle for any good advice, whether financial or aesthetic or
@@ -192,10 +201,9 @@
                 <button class="delete" onclick="closeModal();" aria-label="close"></button>
             </header>
             <section class="modal-card-body">
-                You do not have to connect a wallet to use Collective Filter. This preliminary
-                version is designed for simplicity and privacy. Just click the
-                search buttons below or keyword search for projects, then add them to your selection with the
-                <span style="background-color:green;color:white;font-weight:bold;">&nbsp;+&nbsp;</span>
+                You do not have to connect a wallet to use Collective Filter. Just click the
+                search buttons below or keyword search, then add to your selection with the
+                <img src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" />
                 button and suggestions will update. Buttons have a mouseover tooltip with brief explanation.
                 I may consider letting users connect their wallet in future updates.
                 <br /><br />
@@ -206,10 +214,8 @@
                     <option disabled>Curated (Base) [soon]</option>
                 </select>
                 <br />
-                Exploring different statistical models for various purposes (e.g.,
-                relative date of projects, L1 vs. L2 or both, etc.).
-                Current model is <strong>Ethereum mainnet</strong> from a curated set of collectors of over 600
-                projects, about 87,000 transactions.
+                Current model is <strong>Ethereum mainnet</strong> from a curated set of collectors of over 1,000
+                projects, almost 100,000 transactions.
                 More models forthcoming.
                 <br /><br />
                 <h1 class="content is-medium">Legend to Some Stuff</h1>
@@ -217,11 +223,11 @@
                 <br />
                 <img src="images/os.png" class="img_legend" /> Link to project's listing on OpenSea
                 <br />
-                <img src="images/occ.png" class="img_legend" /> Check on-chain status @ OnChainChecker
+                <img src="images/occ.png" class="img_legend" /> Check on-chain status with On-Chain Checker
                 <br />
                 &#127777; Temperature randomizes results, when > 0, can refresh
                 <br />
-                <img src="images/x.png" class="img_legend" /> Fully remove this project from all results
+                <img src="images/x.png" class="img_legend" /> Fully remove a project from all results
 
             </section>
             <footer class="modal-card-foot">
