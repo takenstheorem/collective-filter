@@ -1,4 +1,4 @@
-/* ____________________ states ____________________ */ 
+/* ____________________ states ____________________ */
 
 var projects;
 var y;
@@ -8,11 +8,11 @@ var chains = { "1": "ethereum", "8453": "base" }
 var explorers = { "1": "https://etherscan.io/address/", "8453": "https://basescan.org/address/" };
 var curclick = '';
 var semantic = false;
-const btns = {'n_txs':'TX','uniq_owners':'UO','g1':'G1','g2':'G2','g3':'G3','connection':'CX','ts':'DT','lucky':'feel lucky?'};
+const btns = { 'n_txs': 'TX', 'uniq_owners': 'UO', 'g1': 'G1', 'g2': 'G2', 'g3': 'G3', 'connection': 'CX', 'ts': 'DT', 'lucky': 'feel lucky?' };
 var temperature = 0;
 var excluded = {};
 
-/* ____________________ data ____________________ */ 
+/* ____________________ data ____________________ */
 
 fetch("json/projs.json")
     .then(response => response.json())
@@ -26,7 +26,7 @@ fetch("json/y.json")
         y = data;
     });
 
-/* ____________________ functions ____________________ */ 
+/* ____________________ functions ____________________ */
 
 // populate exclusion array when clicking red circle
 function exclude(a) {
@@ -34,34 +34,35 @@ function exclude(a) {
 }
 
 // populate chosen array when click plus, update suggestions
-function toggleList(a='') {
-    if (a in chosen & a!='') {
+function updateSugg(a = '') {
+    if (a in chosen && a != '') {
         chosen[a] = !chosen[a];
-    } else if (a!='') {
+    } else if (a != '') {
         chosen[a] = true;
     }
     const tot = totalChosen();
+    updateSelectedModal();
     document.getElementById('count_badge').innerText = tot;
     if (tot > 0) {
-        document.getElementById('output_content').innerHTML = '';
+        document.getElementById('sugg_content').innerHTML = '';
         const rs = r();
         var j = 0;
         temp = [...suggested];
         for (i = 0; i < projects.length; i++) {
-            if (!(projects[rs[i]].address in chosen) & !(projects[rs[i]].address in excluded)) {
-                divItem = makeItem(projects[rs[i]], true);
-                if (rs[i] != temp[j] & temp.indexOf(rs[i]) < 0) {
+            if (!(projects[rs[i]].address in chosen) && !(projects[rs[i]].address in excluded)) {
+                divItem = makeItem(projects[rs[i]], true, true);
+                if (rs[i] != temp[j] && temp.indexOf(rs[i]) < 0) {
                     divItem.classList.add('animate__animated')
                     divItem.classList.add('animate__slideInRight')
-                } else if (temp.indexOf(rs[i]) >= 0 & temp.indexOf(rs[i]) > j) {
+                } else if (temp.indexOf(rs[i]) >= 0 && temp.indexOf(rs[i]) > j) {
                     divItem.classList.add('animate__animated')
                     divItem.classList.add('animate__slideInUp')
-                } else if (temp.indexOf(rs[i]) >= 0 & temp.indexOf(rs[i]) < j) {
+                } else if (temp.indexOf(rs[i]) >= 0 && temp.indexOf(rs[i]) < j) {
                     divItem.classList.add('animate__animated')
                     divItem.classList.add('animate__slideInDown')
                 }
                 suggested[j] = rs[i];
-                document.getElementById('output_content').append(divItem);
+                document.getElementById('sugg_content').append(divItem);
                 j++;
                 if (j > 9) {
                     break;
@@ -69,7 +70,7 @@ function toggleList(a='') {
             }
         }
     } else {
-        document.getElementById('output_content').innerHTML = '<em><br />&larr; select some projects...</em><br /><br />';
+        document.getElementById('sugg_content').innerHTML = '<em><br />&larr; select some projects...</em><br /><br />';
     }
 }
 
@@ -86,8 +87,8 @@ function r() {
 // selected projects as vector input to recommendations (`X`)
 function x() {
     var x = math.zeros(projects.length);
-    Object.entries(chosen).forEach(([a, b]) => {
-        if (b) {
+    Object.entries(chosen).forEach(([a, v]) => {
+        if (v && !(a in excluded)) {
             x.set([projects.findIndex(entry => entry['address'] === a)], 1);
         }
     });
@@ -97,8 +98,8 @@ function x() {
 // compute # selected for suggestions
 function totalChosen() {
     tot = 0;
-    Object.entries(chosen).forEach(([a, b]) => {
-        if (b) tot++;
+    Object.entries(chosen).forEach(([a, v]) => {
+        if (v && !(a in excluded)) tot++;
     });
     return tot;
 }
@@ -110,24 +111,25 @@ function getRandomInt(min, max) {
 
 // update search results for selecting inputs
 var desc = true;
-function udRes(func) {
+function udRes(func, redo = false) {
+    if (redo) desc = !desc;
     const searchTerm = document.getElementById('search_txt').value.toLowerCase();
-    const resultDiv = document.getElementById('result_div');    
+    const resultDiv = document.getElementById('result_div');
     if (func == curclick) desc = !desc;
     else desc = true;
 
     const elementsWithUDClass = document.querySelectorAll('.ud');
     elementsWithUDClass.forEach(element => {
-      element.classList.remove('is-active'); 
+        element.classList.remove('is-active');
     });
     resultDiv.innerHTML = '';
 
-    var top10Results;    
+    var top10Results;
     var temp = [...projects];
-    if (curclick != '' & curclick != 'search') document.getElementById(curclick+'_btn').innerHTML = btns[curclick];
+    if (curclick != '' && curclick != 'search') document.getElementById(curclick + '_btn').innerHTML = btns[curclick];
 
-    if (func != 'search' & func != 'lucky') {
-        document.getElementById(func+'_btn').classList.add('is-active');
+    if (func != 'search' && func != 'lucky') {
+        document.getElementById(func + '_btn').classList.add('is-active');
         if (desc) {
             temp = temp.filter(item => !(item.address in excluded)).sort((a, b) => b[func] - a[func]);
             arrow = '&darr;'
@@ -135,10 +137,10 @@ function udRes(func) {
             temp = temp.filter(item => !(item.address in excluded)).sort((a, b) => a[func] - b[func]);
             arrow = '&uarr;'
         }
-        document.getElementById(func+'_btn').innerHTML = btns[func]+arrow;
+        document.getElementById(func + '_btn').innerHTML = btns[func] + arrow;
         top10Results = temp.slice(0, 10);
     } else if (func == 'lucky') {
-        document.getElementById(func+'_btn').classList.add('is-active');
+        document.getElementById(func + '_btn').classList.add('is-active');
         const randomIndices = [];
         while (randomIndices.length < 10) {
             const randomIndex = getRandomInt(0, projects.length - 1);
@@ -146,21 +148,26 @@ function udRes(func) {
                 randomIndices.push(randomIndex);
             }
         }
-        top10Results = randomIndices.map(index => projects[index]);
+        top10Results = randomIndices
+            .filter(index => !(projects[index].address in excluded))
+            .sort((a, b) => projects[a][func] - projects[b][func])
+            .slice(0, 10)
+            .map(index => projects[index]);
     } else {
         if (searchTerm == '') return;
         const filteredProjects = temp.filter(project =>
             project.name.toLowerCase().includes(searchTerm)
         );
-        top10Results = filteredProjects.slice(0, 10);
+        top10Results = filteredProjects
+            .filter(project => !(project.address in excluded))
+            .slice(0, 10);
     }
 
     top10Results.forEach(project => {
-        const divItem = makeItem(project);
+        const divItem = makeItem(project, true, true);
         resultDiv.appendChild(divItem);
     });
     curclick = func;
-
 }
 
 // process OS data's image entry
@@ -175,14 +182,14 @@ function getImage(project) {
                 if (project.name == projects[i].name) {
                     return projects[i].img;
                 }
-            }                    
+            }
             return "images/q.png";
         }
     }
 }
 
 // populate div's with project details + buttons
-function makeItem(project, plus = true) {
+function makeItem(project, plus = true, minus = true) {
     const divItem = document.createElement('div');
     const imgItem = document.createElement('img');
     imgItem.src = getImage(project);
@@ -198,6 +205,8 @@ function makeItem(project, plus = true) {
     divItem.classList.add("row-container");
     if (!(project.address in chosen) && plus) {
         divItem.innerHTML += `<img src="images/plus.jpg" class="add-btn" data="${project.address}" />`;
+    }
+    if (minus) {
         divItem.innerHTML += `<img src="images/x.png" class="x-btn" data="${project.address}" />`;
     }
     divItem.appendChild(imgItem);
@@ -208,22 +217,26 @@ function makeItem(project, plus = true) {
 }
 
 // modal displays + stats + settings functions
-function closeModal() { 
-    document.getElementById('modal_project').classList.remove('is-active'); 
-    document.getElementById('modal_options').classList.remove('is-active'); 
+function closeModal() {
+    document.getElementById('modal_project').classList.remove('is-active');
+    document.getElementById('modal_options').classList.remove('is-active');
+    document.getElementById('modal_selected').classList.remove('is-active');
 }
-function showModal(img) {
+function showSelectedModal() {
+    document.getElementById('modal_selected').classList.add('is-active');
+}
+function showProjectModal(img) {
     for (i = 0; i < projects.length; i++) {
         if (img.dataset.value == projects[i].address) {
             document.getElementById('modal_title').innerText = projects[i].name;
-            document.getElementById('modal_content').innerHTML = statsDiv(projects[i]);
+            document.getElementById('modal_content_focus').innerHTML = statsDiv(projects[i]);
             document.getElementById('modal_project').classList.add('is-active');
             return;
         }
     }
 }
 
-function statsTag(v,n) {
+function statsTag(v, n) {
     return `<span class="tag is-black">${v} ${n}</span>`;
 }
 
@@ -232,9 +245,9 @@ function statsDiv(project) {
     s += '&nbsp;' + contractLink(project) + '<br />';
     s += `<span class="content is-primary">${markdownToHTML(project.desc)}<span>`;
     s += `<br /><br /><b>Created</b> ${project.dt}`;
-    s += `<br /><br /><b>Stats in snapshot</b><br /> ${statsTag(project.uniq_owners,"unique owners")}`;
-    s += ` ${statsTag(project.n_txs,"transactions")}`;
-    s += ` ${statsTag(project.connection,"connection score")}`;
+    s += `<br /><br /><b>Stats in snapshot</b><br /> ${statsTag(project.uniq_owners, "unique owners")}`;
+    s += ` ${statsTag(project.n_txs, "transactions")}`;
+    s += ` ${statsTag(project.connection, "connection score")}`;
     return `${s}`;
 }
 
@@ -259,12 +272,12 @@ function resetChosen() {
     excluded = {};
     suggested = [];
     document.getElementById('result_div').innerHTML = '';
-    if (curclick!='') {
-        desc = !desc;    
-        udRes(curclick);    
+    if (curclick != '') {
+        desc = !desc;
+        udRes(curclick);
     }
     document.getElementById('count_badge').innerText = 0;
-    document.getElementById('output_content').innerHTML = '<em><br />&larr; select some projects...</em><br /><br />';
+    document.getElementById('sugg_content').innerHTML = '<em><br />&larr; select some projects...</em><br /><br />';
 }
 
 function markdownToHTML(text) {
@@ -278,7 +291,20 @@ function showOptions() {
     document.getElementById('modal_options').classList.add('is-active');
 }
 
-function setOption(e,v) {
-    if (e=='temperature') temperature = v;
-    toggleList();
+function updateSelectedModal() {
+    document.getElementById("modal_content_selected").innerHTML = "";
+    Object.entries(chosen).forEach(([a, v]) => {
+        if (v && !(a in excluded)) {
+            selectedItem = makeItem(projects[projects.findIndex(entry => entry['address'] === a)], false, true);
+            document.getElementById("modal_content_selected").appendChild(selectedItem);
+        }
+    });
+    if (totalChosen() == 0) {
+        closeModal();
+    }
+}
+
+function setOption(e, v) {
+    if (e == 'temperature') temperature = v;
+    updateSugg();
 }
