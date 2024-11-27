@@ -11,6 +11,8 @@ var semantic = false;
 const btns = { 'n_txs': 'TX', 'uniq_owners': 'UO', 'g1': 'G1', 'g2': 'G2', 'g3': 'G3', 'connection': 'CX', 'ts': 'DT', 'lucky': 'feel lucky?' };
 var temperature = 0;
 var excluded = {};
+var faved = {};
+var last10 = {};
 
 /* ____________________ data ____________________ */
 
@@ -25,6 +27,14 @@ fetch("json/y.json")
     .then(data => {
         y = data;
     });
+
+function toggleStorage() {
+    if (document.getElementById('storage_switch').checked) {
+        localStorage.setItem('faved', JSON.stringify(faved));
+    } else {
+        localStorage.removeItem('faved');
+    }
+}
 
 /* ____________________ functions ____________________ */
 
@@ -126,48 +136,56 @@ function udRes(func, redo = false) {
 
     var top10Results;
     var temp = [...projects];
-    if (curclick != '' && curclick != 'search') document.getElementById(curclick + '_btn').innerHTML = btns[curclick];
 
-    if (func != 'search' && func != 'lucky') {
-        document.getElementById(func + '_btn').classList.add('is-active');
-        if (desc) {
-            temp = temp.filter(item => !(item.address in excluded)).sort((a, b) => b[func] - a[func]);
-            arrow = '&darr;'
-        } else {
-            temp = temp.filter(item => !(item.address in excluded)).sort((a, b) => a[func] - b[func]);
-            arrow = '&uarr;'
-        }
-        document.getElementById(func + '_btn').innerHTML = btns[func] + arrow;
-        top10Results = temp.slice(0, 10);
-    } else if (func == 'lucky') {
-        document.getElementById(func + '_btn').classList.add('is-active');
-        const randomIndices = [];
-        while (randomIndices.length < 10) {
-            const randomIndex = getRandomInt(0, projects.length - 1);
-            if (!randomIndices.includes(randomIndex)) {
-                randomIndices.push(randomIndex);
+    if (curclick != '' || func != '') {
+        if (curclick != '' && curclick != 'search') document.getElementById(curclick + '_btn').innerHTML = btns[curclick];
+
+        if (func != 'search' && func != 'lucky') {
+            document.getElementById(func + '_btn').classList.add('is-active');
+            if (desc) {
+                temp = temp.filter(item => !(item.address in excluded)).sort((a, b) => b[func] - a[func]);
+                arrow = '&darr;'
+            } else {
+                temp = temp.filter(item => !(item.address in excluded)).sort((a, b) => a[func] - b[func]);
+                arrow = '&uarr;'
             }
+            document.getElementById(func + '_btn').innerHTML = btns[func] + arrow;
+            top10Results = temp.slice(0, 10);
+        } else if (func == 'lucky') {
+            document.getElementById(func + '_btn').classList.add('is-active');
+            if (redo) {
+                top10Results = last10;
+            } else {
+                const randomIndices = [];
+                while (randomIndices.length < 10) {
+                    const randomIndex = getRandomInt(0, projects.length - 1);
+                    if (!randomIndices.includes(randomIndex)) {
+                        randomIndices.push(randomIndex);
+                    }
+                }
+                top10Results = randomIndices
+                    .filter(index => !(projects[index].address in excluded))
+                    .sort((a, b) => projects[a][func] - projects[b][func])
+                    .slice(0, 10)
+                    .map(index => projects[index]);
+                last10 = top10Results;
+            }
+        } else {
+            if (searchTerm == '') return;
+            const filteredProjects = temp.filter(project =>
+                project.name.toLowerCase().includes(searchTerm)
+            );
+            top10Results = filteredProjects
+                .filter(project => !(project.address in excluded))
+                .slice(0, 10);
         }
-        top10Results = randomIndices
-            .filter(index => !(projects[index].address in excluded))
-            .sort((a, b) => projects[a][func] - projects[b][func])
-            .slice(0, 10)
-            .map(index => projects[index]);
-    } else {
-        if (searchTerm == '') return;
-        const filteredProjects = temp.filter(project =>
-            project.name.toLowerCase().includes(searchTerm)
-        );
-        top10Results = filteredProjects
-            .filter(project => !(project.address in excluded))
-            .slice(0, 10);
-    }
 
-    top10Results.forEach(project => {
-        const divItem = makeItem(project, true, true);
-        resultDiv.appendChild(divItem);
-    });
-    curclick = func;
+        top10Results.forEach(project => {
+            const divItem = makeItem(project, true, true);
+            resultDiv.appendChild(divItem);
+        });
+        curclick = func;
+    }
 }
 
 // process OS data's image entry
@@ -186,6 +204,33 @@ function getImage(project) {
             return "images/q.png";
         }
     }
+}
+
+// make a fave
+function makeFave(h) {
+    if (h.classList.contains("heart-off")) {
+        h.classList.remove("heart-off");
+        h.classList.add("heart-on");
+        faved[h.attributes.data.value] = true;
+    } else {
+        h.classList.remove("heart-on");
+        h.classList.add("heart-off");
+        faved[h.attributes.data.value] = false;
+    }
+    updateFaved();
+    updateSugg();
+    udRes(curclick, true);
+}
+
+// mark project as favorite or not with filled/open heart
+function checkFave(project) {
+    heart_state = "heart-off";
+    if (project.address in faved) {
+        if (faved[project.address]) {
+            heart_state = "heart-on";
+        }
+    }
+    return `<span class="heart ${heart_state}" onclick="makeFave(this);" data="${project.address}">&#9829;</span>`;
 }
 
 // populate div's with project details + buttons
@@ -209,11 +254,12 @@ function makeItem(project, plus = true, minus = true) {
     if (minus) {
         divItem.innerHTML += `<img src="images/x.png" class="x-btn" data="${project.address}" />`;
     }
+    divItem.innerHTML += checkFave(project);
     divItem.appendChild(imgItem);
 
     divItem.innerHTML += `<img class="chain-logo" src="images/${chains[project.chainid]}_logo.png" />`;
     divItem.innerHTML += `<div class="metadata">${project.name}<br /><span class="content is-small" />${contractLink(project)}</div>`;
-    return (divItem);
+    return divItem;
 }
 
 // modal displays + stats + settings functions
@@ -221,6 +267,8 @@ function closeModal() {
     document.getElementById('modal_project').classList.remove('is-active');
     document.getElementById('modal_options').classList.remove('is-active');
     document.getElementById('modal_selected').classList.remove('is-active');
+    document.getElementById('modal_faved').classList.remove('is-active');
+    if (curclick != '') udRes(curclick, true);
 }
 function showSelectedModal() {
     document.getElementById('modal_selected').classList.add('is-active');
@@ -289,6 +337,23 @@ function markdownToHTML(text) {
 
 function showOptions() {
     document.getElementById('modal_options').classList.add('is-active');
+}
+
+function updateFaved() {
+    if (Object.keys(faved).length > 0) {
+        document.getElementById("modal_content_faved").innerHTML = "";
+    }
+    Object.entries(faved).forEach(([a, v]) => {
+        if (v && !(a in excluded)) {
+            favedItem = makeItem(projects[projects.findIndex(entry => entry['address'] === a)], true, false);
+            document.getElementById("modal_content_faved").appendChild(favedItem);
+        }
+    });
+    if (document.getElementById('storage_switch').checked) localStorage.setItem('faved', JSON.stringify(faved));
+}
+function showFaved() {
+    updateFaved();
+    document.getElementById('modal_faved').classList.add('is-active');
 }
 
 function updateSelectedModal() {

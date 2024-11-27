@@ -13,6 +13,9 @@
 </head>
 
 <body>
+    <!----------------------------------------------------------------------
+    --------------------------- SPLASH -------------------------------------
+    ----------------------------------------------------------------------->
 
     <section class="hero is-fullheight">
         <div class="hero-body">
@@ -27,6 +30,10 @@
         </div>
     </section>
 
+    <!----------------------------------------------------------------------
+    --------------------------- MAIN INTERFACE -----------------------------
+    ----------------------------------------------------------------------->
+
     <section class="hero is-fullheight has-background-black" id="suggest">
         <div class="section fixed-grid has-2-cols">
             <div class="grid">
@@ -35,14 +42,18 @@
                         <p class="content is-primary is-large has-text-white">
                             Select
                             <button class="tag is-small" onclick="showSelectedModal();"
-                                title="# unique owners in snapshot">
+                                title="show selected projects for making suggestions">
                                 <span id="count_badge">0</span>&nbsp;selected
                             </button>
                             <span class="tag is-small is-danger pointer" onclick="javascript:resetChosen();"
-                                title="# unique owners in snapshot">reset</span>
+                                title="reset everything except faves">reset</span>
                             <span class="tag is-small is-link pointer" onclick="javascript:showOptions();"
-                                title="# unique owners in snapshot">
+                                title="options & legends">
                                 &#9881;
+                            </span>
+                            <span class="tag is-small is-white pointer" onclick="javascript:showFaved();"
+                                title="view favorites">
+                                &#9829;
                             </span>
                         </p>
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('uniq_owners');"
@@ -54,11 +65,11 @@
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('ts');"
                             title="by most recent in snapshot" id="ts_btn">DT</button>
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('g1');"
-                            title="those in group 1 in model" id="g1_btn">G1</button>
+                            title="statistical group 1 in model" id="g1_btn">G1</button>
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('g2');"
-                            title="those in group 2 in model" id="g2_btn">G2</button>
+                            title="statistical group 2 in model" id="g2_btn">G2</button>
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('g3');"
-                            title="those in group 3 in model" id="g3_btn">G3</button>
+                            title="statistical group 3 in model" id="g3_btn">G3</button>
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('lucky');"
                             title="shuffle!" id="lucky_btn">feel lucky?</button>
                         <input class="input is-info" id="search_txt" autocomplete="off" type="text"
@@ -78,7 +89,7 @@
                         <label onclick="updateSugg();" class="is-small" style="cursor:pointer;margin-right:10px;">
                             &#127777;
                         </label>
-                        <input type="range" title="Temperature: random impulses to shake up the suggestions"
+                        <input type="range" title="temperature adds random impulses to shake up the suggestions"
                             id="temperature" min="0" max="1" value="0" step=".001"
                             onchange="setOption('temperature',this.value);" style="width:100%;">
                     </div>
@@ -96,25 +107,43 @@
         </div>
     </section>
 
+    <!----------------------------------------------------------------------
+    --------------------------- FAQs ---------------------------------------
+    ----------------------------------------------------------------------->
+
     <section class="hero is-fullheight has-background-black" id="faqs">
         <div class="hero-body">
             <div class="container">
                 <h1 class="content is-large is-primary has-text-white">FAQs, etc.</h1>
                 <div>
-                    <h6 class="subtitle is-5"><strong>Note: Collective Filter is an early version data 🧪 experiment</strong>.</h6>
+                    <h6 class="subtitle is-5"><strong>Collective Filter is a little data 🧪
+                            experiment</strong>.</h6>
                     <h6 class="subtitle is-5">It takes input of selected NFT projects, and suggests others.</h6>
+                    <h6 class="subtitle is-5">Suggestions are distilled from pure transaction data; patterns in a collective.</h6>
+
+                    <article class="message is-link">
+                        <div class="message-header">
+                            <p>Disclaimer</p>
+                        </div>
+                        <div class="message-body">
+                            <strong>Collective Filter is a toy, an experiment, for fun. It
+                                should not be regarded as an oracle for any good advice, whether financial or aesthetic
+                                or dietary.</strong>
+                        </div>
+                    </article>
 
                     <h6 class="subtitle is-5">How does it work?</h6>
                     <div class="box">Collective Filter uses a statistical model built from transaction data to suggest
-                        other NFT projects.
-                        <strong>It's built from a subset of data, just a snapshot, so it won't have all your favorite
-                            projects. Currently, it only contains data from Ethereum mainnet</strong>. Using
-                        this data snapshot, the
+                        other NFT projects. <strong>It's built from a subset of data, just a snapshot, so it won't
+                            have all your favorite projects. Currently, it only contains data from Ethereum
+                            mainnet</strong>,
+                        and is based on 100,000 transactions from 1,000 projects. Using this data snapshot, the
                         model maps your selected interests to other projects. These suggested projects
                         reflect collective activity of other collectors. Credits:
                         Data from <a target="_blank" href="https://etherscan.io/">Etherscan</a>, <a
                             href="https://opensea.io">OpenSea</a>.
-                        Statistical modeling &amp; coding by <a target="_blank" href="https://twitter.com/takenstheorem">Takens
+                        Statistical modeling &amp; coding by <a target="_blank"
+                            href="https://twitter.com/takenstheorem">Takens
                             Theorem</a>.
                         Some delightful goodies by <a target="_blank" href="https://bulma.io/">Bulma</a>,
                         <a target="_blank" href="https://mathjs.org/">math.js</a>,
@@ -123,13 +152,17 @@
 
                     <h6 class="subtitle is-5">How do I use it?</h6>
                     <div class="box">
-                        To start, click the buttons below "Select." You can mouseover these buttons to get
+                        I do not require or use any wallet connections, though I may add this in the future.
+                        To start, click the buttons below 'Select.' You can mouseover these buttons to get
                         a quick description. For example, 'tx' lists projects by transactions in the current
                         data snapshot. When the left side populates with
-                        projects, you can select them with the plus button. This immediately generates suggestions
+                        projects, you can select them with the 
+                        <img src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" />
+                        plus button. This immediately generates suggestions
                         at the right. That's it! Feel free to click around.<br /><br />
 
-                        A few other notes. You can exclude projects from your use by clicking the red button on
+                        A few other notes. You can exclude projects from your use by clicking the 
+                        <img src="images/x.png" class="img_legend" /> red button on
                         the bottom right of the results. You can also click on various explorers for the projects
                         as shown in the small button icons. There are a few other details,
                         feel free to click around and see.
@@ -149,6 +182,17 @@
                         But in blockchain, connections across favorite projects are subject to data
                         trends not under our control. Sometimes the model will err. Other times, it will
                         surprise with an unwelcome reality.
+                    </div>
+
+                    <h6 class="subtitle is-5">Can I save my recommendations?</h6>
+                    <div class="box">
+                        I have implemented one single save feature: You can click the save checkbox
+                        in &#9881; options and opt-in to store your favorites list in 
+                        <a target="_blank" href="https://en.wikipedia.org/wiki/Web_storage">localStorage</a>. 
+                        So when you close this window or refresh the page, Collective Filter will
+                        hold onto your favorites. However everything else is reset, including all
+                        selected projects, suggestions and exclusions. I welcome feature requests if
+                        you have another preference for this.
                     </div>
 
                     <h6 class="subtitle is-5">What about next features?</h6>
@@ -171,17 +215,12 @@
                     <div class="box">
                         In short, no, not at all. The model uses raw data and I do not highlight or transform
                         the data with any specific goal other than to express the underlying collective trends.
-                        An important caveat though: Any model is based on a sample of data that I have collected by
-                        seeding this data with projects I've either collected or found interesting over the years. 
+                        An important caveat though: Any model is based on a sample of data curated
+                        with projects I've either collected or found interesting over the years.
                         For this reason, some projects may sometimes appear at the top more than others. This was
-                        not for the purpose of boosting, but reveals the creator's own interests. An important disclaimer
-                        to wrap up:
+                        not for the purpose of boosting, but reveals the creator's own interests. An important
+                        disclaimer to wrap up:
                     </div>
-
-                    <h6 class="subtitle is-5"><strong>Disclaimer: Collective Filter is a toy, an experiment, for fun. It
-                            should not be
-                            regarded as an oracle for any good advice, whether financial or aesthetic or
-                            dietary.</strong></h6>
 
                     <h6 class="subtitle is-5">This project has no mint.</h6>
 
@@ -191,7 +230,9 @@
         </div>
     </section>
 
-    <!------------------------- MODALS ------------------------->
+    <!--------------------------------------------------------------------
+    ----------------------- MODALS ---------------------------------------
+    --------------------------------------------------------------------->
 
     <div id="modal_options" class="modal">
         <div class="modal-background"></div>
@@ -210,13 +251,16 @@
                 <h1 class="content is-medium">Model Options</h1>
                 <select id="model_choice" class="select">
                     <option>Curated</option>
-                    <option disabled>Chaos [soon]</option>
-                    <option disabled>Curated (Base) [soon]</option>
+                    <option disabled>Chaos [interested?]</option>
+                    <option disabled>Curated (Base) [interested?]</option>
                 </select>
                 <br />
                 Current model is <strong>Ethereum mainnet</strong> from a curated set of collectors of over 1,000
                 projects, almost 100,000 transactions.
                 More models forthcoming.
+                <br /><br />
+                <input type="checkbox" id="storage_switch" onclick="toggleStorage();" />
+                    Save favorites in <a target="_blank" href="https://en.wikipedia.org/wiki/Web_storage">localStorage</a>
                 <br /><br />
                 <h1 class="content is-medium">Legend to Some Stuff</h1>
                 <img src="images/ethereum_expl.png" class="img_legend" /> Link to project's contract on explorer
@@ -246,6 +290,26 @@
                 <button class="delete" onclick="closeModal();" aria-label="close"></button>
             </header>
             <section id="modal_content_selected" class="modal-card-body">
+            </section>
+            <footer class="modal-card-foot">
+                <div class="buttons">
+                    <button class="button" onclick="closeModal();">Close</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal_faved" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Favorited</p>
+                <button class="delete" onclick="closeModal();" aria-label="close"></button>
+            </header>
+            <section id="modal_content_faved" class="modal-card-body">
+                Click the &#9829; icon on projects in order to save favorites. If you want to save
+                your favorites after you refresh or navigate away from Collective Filter, click on
+                the options &#9881; button and check save with localStorage.
             </section>
             <footer class="modal-card-foot">
                 <div class="buttons">
