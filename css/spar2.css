@@ -6,7 +6,7 @@
     height: 100%;
     object-fit: cover;
     z-index: -1;
-    filter: brightness(60%) contrast(1.75);
+    filter: brightness(80%) contrast(2.75);
 }
 
 .box {
@@ -101,6 +101,20 @@
     height: auto;
 }
 
+.version {
+    position:absolute;
+    bottom:10px;
+    left:10px !important;
+    font-size:0.75em;
+    color:#ffffff44;
+}
+
+.title-bg {
+    background-color:#11111199!important;
+    padding:25px 0px 20px 0px;
+    border-radius:5px;
+    border:1px solid silver;
+}
 .title {
     font-size: 3em !important;
     font-weight: normal;

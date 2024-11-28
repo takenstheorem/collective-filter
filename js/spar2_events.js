@@ -62,13 +62,13 @@ function excludeUpdate(event) {
     if (event.target.classList.contains('x-btn')) {
         exclude(event.target.attributes.data.value);
         udRes(curclick, true);
-        updateSugg();
+        updateSugg('',false);
         updateSelectedModal();
     }
 }
 function addUpdate(event) {
     if (event.target.classList.contains('add-btn')) {
-        updateSugg(event.target.attributes.data.value);
+        updateSugg(event.target.attributes.data.value,false);
         event.target.parentElement.style.backgroundColor = "#112255";
         event.target.style.display = 'none';
         udRes(curclick, true);

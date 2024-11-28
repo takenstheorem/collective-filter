@@ -12,7 +12,8 @@ const btns = { 'n_txs': 'TX', 'uniq_owners': 'UO', 'g1': 'G1', 'g2': 'G2', 'g3':
 var temperature = 0;
 var excluded = {};
 var faved = {};
-var last10 = {};
+var lastres = {};
+var lastreco = {};
 
 /* ____________________ data ____________________ */
 
@@ -44,7 +45,7 @@ function exclude(a) {
 }
 
 // populate chosen array when click plus, update suggestions
-function updateSugg(a = '') {
+function updateSugg(a = '', redo = false) {
     if (a in chosen && a != '') {
         chosen[a] = !chosen[a];
     } else if (a != '') {
@@ -55,9 +56,14 @@ function updateSugg(a = '') {
     document.getElementById('count_badge').innerText = tot;
     if (tot > 0) {
         document.getElementById('sugg_content').innerHTML = '';
-        const rs = r();
+        var rs = r();
         var j = 0;
-        temp = [...suggested];
+        if (redo) {
+            rs = [...lastres];
+            temp = [...lastres];
+        } else {
+            temp = [...suggested];
+        }
         for (i = 0; i < projects.length; i++) {
             if (!(projects[rs[i]].address in chosen) && !(projects[rs[i]].address in excluded)) {
                 divItem = makeItem(projects[rs[i]], true, true);
@@ -79,6 +85,7 @@ function updateSugg(a = '') {
                 }
             }
         }
+        lastres = [...suggested];
     } else {
         document.getElementById('sugg_content').innerHTML = '<em><br />&larr; select some projects...</em><br /><br />';
     }
@@ -154,7 +161,7 @@ function udRes(func, redo = false) {
         } else if (func == 'lucky') {
             document.getElementById(func + '_btn').classList.add('is-active');
             if (redo) {
-                top10Results = last10;
+                top10Results = lastres;
             } else {
                 const randomIndices = [];
                 while (randomIndices.length < 10) {
@@ -168,7 +175,7 @@ function udRes(func, redo = false) {
                     .sort((a, b) => projects[a][func] - projects[b][func])
                     .slice(0, 10)
                     .map(index => projects[index]);
-                last10 = top10Results;
+                lastres = top10Results;
             }
         } else {
             if (searchTerm == '') return;
@@ -218,7 +225,7 @@ function makeFave(h) {
         faved[h.attributes.data.value] = false;
     }
     updateFaved();
-    updateSugg();
+    updateSugg('', true);
     udRes(curclick, true);
 }
 
@@ -364,12 +371,39 @@ function updateSelectedModal() {
             document.getElementById("modal_content_selected").appendChild(selectedItem);
         }
     });
-    if (totalChosen() == 0) {
-        closeModal();
-    }
 }
 
 function setOption(e, v) {
-    if (e == 'temperature') temperature = v;
-    updateSugg();
+    if (e == 'temperature') {
+        temperature = v;
+        updateSugg('', false);
+    } else {
+        updateSugg('', true);
+    }
+}
+
+function excludeBigs() {
+    if (document.getElementById('exclude_bigs_switch').checked) {
+        for (i = 0; i < projects.length; i++) {
+            if (projects[i].n_txs > 200) excluded[projects[i].address] = true;
+        }
+    } else {
+        for (i = 0; i < projects.length; i++) {
+            if (projects[i].n_txs > 200) {
+                excluded = removeEntry(excluded, projects[i].address);
+            }
+        }
+    }
+    udRes(curclick, true);
+    updateSugg('', false);
+}
+
+function removeEntry(obj, keyToRemove) {
+    const newObj = {};
+    for (const key in obj) {
+        if (key !== keyToRemove) {
+            newObj[key] = obj[key];
+        }
+    }
+    return newObj;
 }

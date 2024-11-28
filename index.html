@@ -21,14 +21,17 @@
         <div class="hero-body">
             <div class="container has-text-centered">
                 <h1 class="title has-text-white">
-                    Collective Filter 🔍
-                    <a href="#suggest" class="main-nav button is-medium margin-bottom">Try</a>
-                    <a href="#faqs" class="main-nav button is-medium margin-bottom">FAQs</a>
+                    <div class="title-bg">
+                        Collective Filter 🔍
+                        <a href="#suggest" class="main-nav button is-medium margin-bottom">Try</a>
+                        <a href="#faqs" class="main-nav button is-medium margin-bottom">FAQs</a>
+                    </div>
                 </h1>
                 <img src="images/sitelogo.jpg" class="cover-image" />
             </div>
-        </div>
     </section>
+
+    <div class="version">version 0.12 | 11.28.2024</div>
 
     <!----------------------------------------------------------------------
     --------------------------- MAIN INTERFACE -----------------------------
@@ -119,7 +122,8 @@
                     <h6 class="subtitle is-5"><strong>Collective Filter is a little data 🧪
                             experiment</strong>.</h6>
                     <h6 class="subtitle is-5">It takes input of selected NFT projects, and suggests others.</h6>
-                    <h6 class="subtitle is-5">Suggestions are distilled from pure transaction data; patterns in a collective.</h6>
+                    <h6 class="subtitle is-5">Suggestions are distilled from pure transaction data; patterns in a
+                        collective.</h6>
 
                     <article class="message is-link">
                         <div class="message-header">
@@ -152,16 +156,18 @@
 
                     <h6 class="subtitle is-5">How do I use it?</h6>
                     <div class="box">
+                        <a href="https://x.com/takenstheorem/status/1861792655522591195" target="_blank">See here</a>
+                        for a demonstration.
                         I do not require or use any wallet connections, though I may add this in the future.
                         To start, click the buttons below 'Select.' You can mouseover these buttons to get
                         a quick description. For example, 'tx' lists projects by transactions in the current
                         data snapshot. When the left side populates with
-                        projects, you can select them with the 
+                        projects, you can select them with the
                         <img src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" />
                         plus button. This immediately generates suggestions
                         at the right. That's it! Feel free to click around.<br /><br />
 
-                        A few other notes. You can exclude projects from your use by clicking the 
+                        A few other notes. You can exclude projects from your use by clicking the
                         <img src="images/x.png" class="img_legend" /> red button on
                         the bottom right of the results. You can also click on various explorers for the projects
                         as shown in the small button icons. There are a few other details,
@@ -187,8 +193,8 @@
                     <h6 class="subtitle is-5">Can I save my recommendations?</h6>
                     <div class="box">
                         I have implemented one single save feature: You can click the save checkbox
-                        in &#9881; options and opt-in to store your favorites list in 
-                        <a target="_blank" href="https://en.wikipedia.org/wiki/Web_storage">localStorage</a>. 
+                        in &#9881; options and opt-in to store your favorites list in
+                        <a target="_blank" href="https://en.wikipedia.org/wiki/Web_storage">localStorage</a>.
                         So when you close this window or refresh the page, Collective Filter will
                         hold onto your favorites. However everything else is reset, including all
                         selected projects, suggestions and exclusions. I welcome feature requests if
@@ -242,11 +248,11 @@
                 <button class="delete" onclick="closeModal();" aria-label="close"></button>
             </header>
             <section class="modal-card-body">
-                You do not have to connect a wallet to use Collective Filter. Just click the
-                search buttons below or keyword search, then add to your selection with the
-                <img src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" />
-                button and suggestions will update. Buttons have a mouseover tooltip with brief explanation.
-                I may consider letting users connect their wallet in future updates.
+                <small>You do not have to connect a wallet to use Collective Filter. Just click the
+                    search buttons below or keyword search, then add to your selection with the
+                    <img src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" />
+                    button and suggestions will update. Buttons have a mouseover tooltip with brief explanation.
+                    I may consider letting users connect their wallet in future updates.</small>
                 <br /><br />
                 <h1 class="content is-medium">Model Options</h1>
                 <select id="model_choice" class="select">
@@ -260,7 +266,10 @@
                 More models forthcoming.
                 <br /><br />
                 <input type="checkbox" id="storage_switch" onclick="toggleStorage();" />
-                    Save favorites in <a target="_blank" href="https://en.wikipedia.org/wiki/Web_storage">localStorage</a>
+                Save favorites in <a target="_blank" href="https://en.wikipedia.org/wiki/Web_storage">localStorage</a>
+                <br />
+                <input type="checkbox" id="exclude_bigs_switch" onclick="excludeBigs();" />
+                Auto exclude larger projects (platforms, CKs, etc.) 
                 <br /><br />
                 <h1 class="content is-medium">Legend to Some Stuff</h1>
                 <img src="images/ethereum_expl.png" class="img_legend" /> Link to project's contract on explorer
