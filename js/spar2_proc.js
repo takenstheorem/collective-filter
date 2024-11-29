@@ -64,7 +64,7 @@ function updateSugg(a = '', redo = false) {
         } else {
             temp = [...suggested];
         }
-        for (i = 0; i < projects.length; i++) {
+        for (let i = 0; i < projects.length; i++) {            
             if (!(projects[rs[i]].address in chosen) && !(projects[rs[i]].address in excluded)) {
                 divItem = makeItem(projects[rs[i]], true, true);
                 if (rs[i] != temp[j] && temp.indexOf(rs[i]) < 0) {
@@ -79,7 +79,7 @@ function updateSugg(a = '', redo = false) {
                 }
                 suggested[j] = rs[i];
                 document.getElementById('sugg_content').append(divItem);
-                j++;
+                j++;                
                 if (j > 9) {
                     break;
                 }
@@ -203,7 +203,7 @@ function getImage(project) {
         if (project.name == 'Art Blocks') {
             return "images/ab.png";
         } else {
-            for (i = 0; i < projects.length; i++) {
+            for (let i = 0; i < projects.length; i++) {
                 if (project.name == projects[i].name && project.address != projects[i].address) {
                     return projects[i].img;
                 }
@@ -281,7 +281,7 @@ function showSelectedModal() {
     document.getElementById('modal_selected').classList.add('is-active');
 }
 function showProjectModal(img) {
-    for (i = 0; i < projects.length; i++) {
+    for (let i = 0; i < projects.length; i++) {
         if (img.dataset.value == projects[i].address) {
             document.getElementById('modal_title').innerText = projects[i].name;
             document.getElementById('modal_content_focus').innerHTML = statsDiv(projects[i]);
@@ -326,6 +326,7 @@ function resetChosen() {
     chosen = {};
     excluded = {};
     suggested = [];
+    document.getElementById('exclude_bigs_switch').checked = null;
     document.getElementById('result_div').innerHTML = '';
     if (curclick != '') {
         desc = !desc;
@@ -384,11 +385,11 @@ function setOption(e, v) {
 
 function excludeBigs() {
     if (document.getElementById('exclude_bigs_switch').checked) {
-        for (i = 0; i < projects.length; i++) {
+        for (let i = 0; i < projects.length; i++) {
             if (projects[i].n_txs > 200) excluded[projects[i].address] = true;
         }
     } else {
-        for (i = 0; i < projects.length; i++) {
+        for (let i = 0; i < projects.length; i++) {
             if (projects[i].n_txs > 200) {
                 excluded = removeEntry(excluded, projects[i].address);
             }
