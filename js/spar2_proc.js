@@ -59,8 +59,8 @@ function updateSugg(a = '', redo = false) {
         var rs = r();
         var j = 0;
         if (redo) {
-            rs = [...lastres];
-            temp = [...lastres];
+            rs = [...lastreco];
+            temp = [...lastreco];
         } else {
             temp = [...suggested];
         }
@@ -85,7 +85,7 @@ function updateSugg(a = '', redo = false) {
                 }
             }
         }
-        lastres = [...suggested];
+        lastreco = [...suggested];
     } else {
         document.getElementById('sugg_content').innerHTML = '<em><br />&larr; select some projects...</em><br /><br />';
     }
