@@ -39,13 +39,13 @@ function toggleStorage() {
 
 models = [{ 'projs': 'curated-projs-v.0.1.json', 'model': 'curated-model-v.0.1.json' },
 { 'projs': 'jpg-projs.json', 'model': 'jpg-model.json' }]
-function reloadMaterials() {
-    fetch("json/" + models[document.getElementById('model_choice').value].projs)
+async function reloadMaterials() {
+    await fetch("json/" + models[document.getElementById('model_choice').value].projs)
         .then(response => response.json())
         .then(data => {
             projects = data;
         });
-    fetch("json/" + models[document.getElementById('model_choice').value].model)
+    await fetch("json/" + models[document.getElementById('model_choice').value].model)
         .then(response => response.json())
         .then(data => {
             y = data;
