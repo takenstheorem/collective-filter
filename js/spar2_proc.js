@@ -329,7 +329,7 @@ function statsDiv(project) {
 }
 function showSpecial(project) {
     if (document.getElementById('model_choice').value=='1') { // JPG
-        return `<img src="images/jpg.jpg" style="vertical-align:middle;width:50px;height:50px;border-radius:10000px;" /> appeared in ${project.n_gals} galleries<br />`;
+        return `<img src="images/jpg.jpg" style="vertical-align:middle;width:50px;height:50px;border-radius:10000px;" /> found in ${project.n_gals} galler${project.n_gals==1 ? 'y' : 'ies'}<br />`;
     } else {
         return '';
     }
