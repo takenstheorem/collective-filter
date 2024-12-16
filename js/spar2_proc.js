@@ -50,12 +50,6 @@ function reloadMaterials() {
         .then(data => {
             y = data;
         });
-    if (document.getElementById('model_choice').value != '0') {
-        document.getElementById('exclude_bigs_switch').disabled = true;
-        document.getElementById('exclude_bigs_switch').checked = false;
-    } else {
-        document.getElementById('exclude_bigs_switch').removeAttribute('disabled');
-    }
     resetChosen();
 }
 
@@ -328,8 +322,8 @@ function statsDiv(project) {
     return `${s}`;
 }
 function showSpecial(project) {
-    if (document.getElementById('model_choice').value=='1') { // JPG
-        return `<img src="images/jpg.jpg" style="vertical-align:middle;width:50px;height:50px;border-radius:10000px;" /> found in ${project.n_gals} galler${project.n_gals==1 ? 'y' : 'ies'}<br />`;
+    if (document.getElementById('model_choice').value == '1') { // JPG
+        return `<img src="images/jpg.jpg" style="vertical-align:middle;width:50px;height:50px;border-radius:10000px;" /> featured in ${project.n_gals} galler${project.n_gals == 1 ? 'y' : 'ies'}<br />`;
     } else {
         return '';
     }
@@ -385,8 +379,8 @@ function updateFaved() {
             project = projects[projects.findIndex(entry => entry['address'] === a)];
             if (!(typeof project === 'undefined')) {
                 favedItem = makeItem(project, true, false);
-                document.getElementById("modal_content_faved").appendChild(favedItem);                
-            } 
+                document.getElementById("modal_content_faved").appendChild(favedItem);
+            }
         }
     });
     if (document.getElementById('storage_switch').checked) localStorage.setItem('faved', JSON.stringify(faved));
@@ -415,15 +409,21 @@ function setOption(e, v) {
     }
 }
 
-function excludeBigs() {
+async function excludeBigs() {
+    var refprojs;
+    await fetch("json/curated-projs-v.0.1.json")
+        .then(response => response.json())
+        .then(data => {
+            refprojs = data;
+        });
     if (document.getElementById('exclude_bigs_switch').checked) {
-        for (let i = 0; i < projects.length; i++) {
-            if (projects[i].n_txs > 200) excluded[projects[i].address] = true;
+        for (let i = 0; i < refprojs.length; i++) {
+            if (refprojs[i].n_txs > 200) excluded[refprojs[i].address] = true;
         }
     } else {
-        for (let i = 0; i < projects.length; i++) {
-            if (projects[i].n_txs > 200) {
-                excluded = removeEntry(excluded, projects[i].address);
+        for (let i = 0; i < refprojs.length; i++) {
+            if (refprojs[i].n_txs > 200) {
+                excluded = removeEntry(excluded, refprojs[i].address);
             }
         }
     }
