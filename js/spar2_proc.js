@@ -322,10 +322,17 @@ function statsDiv(project) {
     s += '&nbsp;' + contractLink(project) + '<br />';
     s += `<span class="content is-primary">${markdownToHTML(project.desc)}<span>`;
     s += `<br /><br /><b>Created</b> ${project.dt}`;
-    s += `<br /><br /><b>Stats in snapshot</b><br /> ${statsTag(project.uniq_owners, "unique owners")}`;
+    s += `<br /><br /><b>Stats in snapshot</b><br /> ${showSpecial(project)}${statsTag(project.uniq_owners, "unique owners")}`;
     s += ` ${statsTag(project.n_txs, "transactions")}`;
     s += ` ${statsTag(project.connection, "connection score")}`;
     return `${s}`;
+}
+function showSpecial(project) {
+    if (document.getElementById('model_choice').value=='1') { // JPG
+        return `<img src="images/jpg.jpg" style="vertical-align:middle;width:50px;height:50px;border-radius:10000px;" /> appeared in ${project.n_gals} galleries<br />`;
+    } else {
+        return '';
+    }
 }
 
 function contractLink(project) {
