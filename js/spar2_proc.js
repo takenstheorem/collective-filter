@@ -17,13 +17,13 @@ var lastreco = {};
 
 /* ____________________ data ____________________ */
 
-fetch("json/projs.json")
+fetch("json/curated-projs-v.0.1.json")
     .then(response => response.json())
     .then(data => {
         projects = data;
     });
 
-fetch("json/y.json")
+fetch("json/curated-model-v.0.1.json")
     .then(response => response.json())
     .then(data => {
         y = data;
@@ -35,6 +35,28 @@ function toggleStorage() {
     } else {
         localStorage.removeItem('faved');
     }
+}
+
+models = [{ 'projs': 'curated-projs-v.0.1.json', 'model': 'curated-model-v.0.1.json' },
+{ 'projs': 'jpg-projs.json', 'model': 'jpg-model.json' }]
+function reloadMaterials() {
+    fetch("json/" + models[document.getElementById('model_choice').value].projs)
+        .then(response => response.json())
+        .then(data => {
+            projects = data;
+        });
+    fetch("json/" + models[document.getElementById('model_choice').value].model)
+        .then(response => response.json())
+        .then(data => {
+            y = data;
+        });
+    if (document.getElementById('model_choice').value != '0') {
+        document.getElementById('exclude_bigs_switch').disabled = true;
+        document.getElementById('exclude_bigs_switch').checked = false;
+    } else {
+        document.getElementById('exclude_bigs_switch').removeAttribute('disabled');
+    }
+    resetChosen();
 }
 
 /* ____________________ functions ____________________ */
@@ -64,7 +86,7 @@ function updateSugg(a = '', redo = false) {
         } else {
             temp = [...suggested];
         }
-        for (let i = 0; i < projects.length; i++) {            
+        for (let i = 0; i < projects.length; i++) {
             if (!(projects[rs[i]].address in chosen) && !(projects[rs[i]].address in excluded)) {
                 divItem = makeItem(projects[rs[i]], true, true);
                 if (rs[i] != temp[j] && temp.indexOf(rs[i]) < 0) {
@@ -79,7 +101,7 @@ function updateSugg(a = '', redo = false) {
                 }
                 suggested[j] = rs[i];
                 document.getElementById('sugg_content').append(divItem);
-                j++;                
+                j++;
                 if (j > 9) {
                     break;
                 }
@@ -353,8 +375,11 @@ function updateFaved() {
     }
     Object.entries(faved).forEach(([a, v]) => {
         if (v && !(a in excluded)) {
-            favedItem = makeItem(projects[projects.findIndex(entry => entry['address'] === a)], true, false);
-            document.getElementById("modal_content_faved").appendChild(favedItem);
+            project = projects[projects.findIndex(entry => entry['address'] === a)];
+            if (!(typeof project === 'undefined')) {
+                favedItem = makeItem(project, true, false);
+                document.getElementById("modal_content_faved").appendChild(favedItem);                
+            } 
         }
     });
     if (document.getElementById('storage_switch').checked) localStorage.setItem('faved', JSON.stringify(faved));
