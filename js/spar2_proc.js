@@ -37,7 +37,7 @@ function toggleStorage() {
     }
 }
 
-models = [{ 'projs': 'curated-projs-v.0.1.json', 'model': 'curated-model-v.0.1.json' },
+models = [{ 'projs': 'curated-projs-v.0.2.json', 'model': 'curated-model-v.0.2.json' },
 { 'projs': 'jpg-projs.json', 'model': 'jpg-model.json' }]
 async function reloadMaterials() {
     await fetch("json/" + models[document.getElementById('model_choice').value].projs)
