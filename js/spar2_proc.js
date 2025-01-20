@@ -17,13 +17,13 @@ var lastreco = {};
 
 /* ____________________ data ____________________ */
 
-fetch("json/curated-projs-v.0.1.json")
+fetch("json/mainnet-projs-v.0.2.json")
     .then(response => response.json())
     .then(data => {
         projects = data;
     });
 
-fetch("json/curated-model-v.0.1.json")
+fetch("json/mainnet-model-v.0.2.json")
     .then(response => response.json())
     .then(data => {
         y = data;
@@ -37,8 +37,10 @@ function toggleStorage() {
     }
 }
 
-models = [{ 'projs': 'curated-projs-v.0.2.json', 'model': 'curated-model-v.0.2.json' },
-{ 'projs': 'jpg-projs.json', 'model': 'jpg-model.json' }]
+models = [{ 'projs': 'mainnet-projs-v.0.2.json', 'model': 'mainnet-model-v.0.2.json' },
+{ 'projs': 'jpg-projs.json', 'model': 'jpg-model.json' },
+{ 'projs': 'base-projs-v.0.1.json', 'model': 'base-model-v.0.1.json' },
+{ 'projs': 'mixed-projs-v.0.1.json', 'model': 'mixed-model-v.0.1.json' } ]
 async function reloadMaterials() {
     await fetch("json/" + models[document.getElementById('model_choice').value].projs)
         .then(response => response.json())
