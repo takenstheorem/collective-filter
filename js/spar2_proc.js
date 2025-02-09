@@ -8,12 +8,15 @@ var chains = { "1": "ethereum", "8453": "base" }
 var explorers = { "1": "https://etherscan.io/address/", "8453": "https://basescan.org/address/" };
 var curclick = '';
 var semantic = false;
-const btns = { 'n_txs': 'TX', 'uniq_owners': 'UO', 'g1': 'G1', 'g2': 'G2', 'g3': 'G3', 'connection': 'CX', 'ts': 'DT', 'lucky': 'feel lucky?' };
-var temperature = 0;
+const btns = { 'ts': 'DT', 'n_txs': 'TX', 'uniq_owners': 'UO', 'g1': 'G1', 'g2': 'G2', 'g3': 'G3', 'connection': 'CX', 'lucky': 'feel lucky?' };
+var temperature = 0.005;
 var excluded = {};
 var faved = {};
 var lastres = {};
 var lastreco = {};
+var curl = 0;
+var curr = 10;
+var top10Results; // tracking search results
 
 /* ____________________ data ____________________ */
 
@@ -72,6 +75,7 @@ function updateSugg(a = '', redo = false) {
     const tot = totalChosen();
     updateSelectedModal();
     document.getElementById('count_badge').innerText = tot;
+    document.getElementById('count_badge_2').innerText = tot;
     if (tot > 0) {
         document.getElementById('sugg_content').innerHTML = '';
         var rs = r();
@@ -104,8 +108,10 @@ function updateSugg(a = '', redo = false) {
             }
         }
         lastreco = [...suggested];
+        document.getElementById('view_suggestions_btn').style.visibility = 'visible';
     } else {
-        document.getElementById('sugg_content').innerHTML = '<em><br />&larr; select some projects...</em><br /><br />';
+        document.getElementById('view_suggestions_btn').style.visibility = 'hidden';
+        document.getElementById('sugg_content').innerHTML = '<em><br />&uarr; select some projects...</em><br /><br />';
     }
 }
 
@@ -147,11 +153,20 @@ function getRandomInt(min, max) {
 // update search results for selecting inputs
 var desc = true;
 function udRes(func, redo = false) {
-    if (redo) desc = !desc;
     const searchTerm = document.getElementById('search_txt').value.toLowerCase();
     const resultDiv = document.getElementById('result_div');
-    if (func == curclick) desc = !desc;
-    else desc = true;
+    if (func == curclick & redo) {
+        desc = !desc;
+        curl = 0;
+        curr = 10;
+    } else if (func == curclick & !redo) {
+      // radv or ladv  
+    }
+    else {
+        desc = true;
+        curl = 0;
+        curr = 10;
+    }
 
     const elementsWithUDClass = document.querySelectorAll('.ud');
     elementsWithUDClass.forEach(element => {
@@ -159,7 +174,6 @@ function udRes(func, redo = false) {
     });
     resultDiv.innerHTML = '';
 
-    var top10Results;
     var temp = [...projects];
 
     if (curclick != '' || func != '') {
@@ -175,7 +189,7 @@ function udRes(func, redo = false) {
                 arrow = '&uarr;'
             }
             document.getElementById(func + '_btn').innerHTML = btns[func] + arrow;
-            top10Results = temp.slice(0, 10);
+            top10Results = temp.slice(curl, curr);
         } else if (func == 'lucky') {
             document.getElementById(func + '_btn').classList.add('is-active');
             if (redo) {
@@ -191,7 +205,7 @@ function udRes(func, redo = false) {
                 top10Results = randomIndices
                     .filter(index => !(projects[index].address in excluded))
                     .sort((a, b) => projects[a][func] - projects[b][func])
-                    .slice(0, 10)
+                    .slice(curl, curr)
                     .map(index => projects[index]);
                 lastres = top10Results;
             }
@@ -202,14 +216,33 @@ function udRes(func, redo = false) {
             );
             top10Results = filteredProjects
                 .filter(project => !(project.address in excluded))
-                .slice(0, 10);
+                .slice(curl, curr);            
         }
 
         top10Results.forEach(project => {
             const divItem = makeItem(project, true, true);
             resultDiv.appendChild(divItem);
         });
+        if (top10Results.length==10 & func!='lucky') {
+            resultDiv.innerHTML += `<div></div><div style=width:100%;text-align:right;><span class="adv" onclick="ladv();">&#11013;</span> ${curl+1} &dash; ${curr} <span class="adv" onclick="radv()">&#10145;</span></div>`;
+        }
         curclick = func;
+    }
+}
+
+// advance left or right in search
+function ladv() {
+    if (curl>=10) {
+        curl -= 10;
+        curr -= 10;
+        udRes(curclick, false);
+    }
+}
+function radv() {
+    if (top10Results.length==10) {
+        curl += 10;
+        curr += 10;
+        udRes(curclick, false);
     }
 }
 
@@ -244,7 +277,7 @@ function makeFave(h) {
     }
     updateFaved();
     updateSugg('', true);
-    udRes(curclick, true);
+    udRes(curclick, false);
 }
 
 // mark project as favorite or not with filled/open heart
@@ -273,6 +306,8 @@ function makeItem(project, plus = true, minus = true) {
         }
     }
     divItem.classList.add("row-container");
+    divItem.classList.add("cell");
+    divItem.classList.add("m-0");
     if (!(project.address in chosen) && plus) {
         divItem.innerHTML += `<img src="images/plus.jpg" class="add-btn" data="${project.address}" />`;
     }
@@ -282,8 +317,21 @@ function makeItem(project, plus = true, minus = true) {
     divItem.innerHTML += checkFave(project);
     divItem.appendChild(imgItem);
 
-    divItem.innerHTML += `<img class="chain-logo" src="images/${chains[project.chainid]}_logo.png" />`;
-    divItem.innerHTML += `<div class="metadata">${project.name}<br /><span class="content is-small" />${contractLink(project)}</div>`;
+    divItem.innerHTML += `<img class="chain-logo" src="images/${chains[project.chainid]}_logo.png" />`;    
+    //projDt = `<small style="font-size: 0.5em; opacity: 0.5;">${project.dt}</small>`;
+    const dateParts = project.dt.split('-');
+    const year = parseInt(dateParts[0]); 
+    const month = parseInt(dateParts[1]) - 1;
+    const day = parseInt(dateParts[2]);
+  
+    let projDt = new Date(year, month, day).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+
+    projDt = '<small style="font-size: 0.5em; opacity: 0.5;">'+projDt+'</small>';
+    divItem.innerHTML += `<div class="metadata">${project.name.substring(0,30) + (project.name.length>30?'...':'')} ${projDt}</small><br /><span class="content is-small" />${contractLink(project)}</div>`;
     return divItem;
 }
 
@@ -293,7 +341,7 @@ function closeModal() {
     document.getElementById('modal_options').classList.remove('is-active');
     document.getElementById('modal_selected').classList.remove('is-active');
     document.getElementById('modal_faved').classList.remove('is-active');
-    if (curclick != '') udRes(curclick, true);
+    if (curclick != '') udRes(curclick, false);
 }
 function showSelectedModal() {
     document.getElementById('modal_selected').classList.add('is-active');
@@ -358,7 +406,9 @@ function resetChosen() {
         udRes(curclick);
     }
     document.getElementById('count_badge').innerText = 0;
-    document.getElementById('sugg_content').innerHTML = '<em><br />&larr; select some projects...</em><br /><br />';
+    document.getElementById('count_badge_2').innerText = 0;
+    document.getElementById('view_suggestions_btn').style.visibility = 'hidden';
+    document.getElementById('sugg_content').innerHTML = '<em><br />&uarr; select some projects...</em><br /><br />';
 }
 
 function markdownToHTML(text) {

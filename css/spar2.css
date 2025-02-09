@@ -13,6 +13,10 @@
     margin-top: -20px !important;
 }
 
+#sugg_content {
+    cursor:default;
+}
+
 .row-container {
     position: relative;
     padding: 10px;
@@ -29,6 +33,10 @@
 
 #semantics_btn {
     margin-bottom: 15px;
+}
+
+.adv {
+    cursor:pointer;
 }
 
 .link-logo {
