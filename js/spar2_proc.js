@@ -341,6 +341,7 @@ function closeModal() {
     document.getElementById('modal_options').classList.remove('is-active');
     document.getElementById('modal_selected').classList.remove('is-active');
     document.getElementById('modal_faved').classList.remove('is-active');
+    document.getElementById('modal_help').classList.remove('is-active');
     if (curclick != '') udRes(curclick, false);
 }
 function showSelectedModal() {
@@ -420,6 +421,10 @@ function markdownToHTML(text) {
 
 function showOptions() {
     document.getElementById('modal_options').classList.add('is-active');
+}
+
+function showHelp() {
+    document.getElementById('modal_help').classList.add('is-active');
 }
 
 function updateFaved() {

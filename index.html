@@ -50,7 +50,7 @@
                             </button>
                             <span class="tag is-small is-danger pointer" onclick="javascript:resetChosen();"
                                 title="reset everything except faves">reset</span>
-                            <span class="tag is-small is-link pointer" onclick="javascript:showOptions();"
+                            <span class="tag is-small is-white pointer" onclick="javascript:showOptions();"
                                 title="options & legends">
                                 &#9881;
                             </span>
@@ -58,8 +58,15 @@
                                 title="view favorites">
                                 &#9829;
                             </span>
+                            <span class="tag is-small is-white pointer" onclick="javascript:showHelp();"
+                                title="view help">
+                                &#63;
+                            </span>
                         </p>
-                        <p class="content is-secondary">Choose some of your favorite projects by clicking <img src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" /> and adding them to the "selected" list. This selected list is used to populate project suggestions when you click the "view suggestions" button below.</p>
+                        <p class="content is-secondary">Search by using the text box or search buttons (such as 'dt' which sorts search by date of project). Then, choose some of your favorite projects by clicking <img
+                                src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" /> and adding
+                            them to the "selected" list. This selected list is used to populate project suggestions when
+                            you click the "view suggestions" button below.</p>
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('ts', true);"
                             title="by most recent in snapshot" id="ts_btn">DT</button>
                         <button class="button ud margin-bottom is-small"
@@ -82,7 +89,9 @@
                         <div class="fixed-grid has-2-columns">
                             <div id="result_div" class="grid"></div>
                         </div>
-                        <div class="content center"><button href="#suggest" id="view_suggestions_btn" style="visibility:hidden;" class="main-nav button is-large is-primary">View Suggestions</button></div>
+                        <div class="content center"><button href="#suggest" id="view_suggestions_btn"
+                                style="visibility:hidden;" class="main-nav button is-large is-primary">View
+                                Suggestions</button></div>
                     </div>
                 </div>
             </div>
@@ -103,7 +112,11 @@
                             title="reset everything except faves">reset
                         </span>
                     </p>
-                    <p class="content is-secondary">These "suggestions" are based on a small data snapshot and a machine-learning model. See <a href="#faqs" class="main-nav">FAQs</a> for more details, and click "refine" to go back to the search panel, or "reset" to start over the selection process.</p>
+                    <p class="content is-secondary">These "suggestions" are based on a small data snapshot and a
+                        machine-learning model. See <a href="#faqs" class="main-nav">FAQs</a> for more details, and
+                        click "refine" to go back to the search panel, or "reset" to start over the selection process.
+                        Click the temperature &#x21bb;&#127777; button to refresh the suggestions, or adjust the temperature to increase the randomness of these suggestions.
+                    </p>
                     <div style="display:flex;align-items:center;" class="mb-3">
                         <button onclick="updateSugg();">&#x21bb;</button>
                         <label onclick="updateSugg();" class="is-small" style="cursor:pointer;margin-right:10px;">
@@ -277,7 +290,7 @@
     ----------------------- MODALS ---------------------------------------
     --------------------------------------------------------------------->
 
-        <div id="modal_options" class="modal">
+        <div id="modal_help" class="modal">
             <div class="modal-background"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
@@ -289,17 +302,62 @@
                         search buttons below or keyword search, then add to your selection with the
                         <img src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" />
                         button and suggestions will update. Buttons have a mouseover tooltip with brief explanation.
-                        I may consider letting users connect their wallet in future updates.</small>
-                    <br /><br />
+                        I may consider letting users connect their wallet in future updates.
+                        <br /><br />
+                        <h1 class="content is-medium">Search Tools</h1>
+                        <button class="button ud margin-none is-small">dt</button> Sort selectable projects by
+                        date<br />
+                        <button class="button ud margin-none is-small">uo</button> Sort by # users in data
+                        snapshot<br />
+                        <button class="button ud margin-none is-small">tx</button> Sort by # txs in data
+                        snapshot<br />
+                        <button class="button ud margin-none is-small">cx</button> Sort by project's connectivity
+                        metric<br />
+                        <button class="button ud margin-none is-small">g1</button> Sort by group 1 "cluster" in
+                        model<br />
+                        <button class="button ud margin-none is-small">g2</button> Sort by group 2 "cluster" in
+                        model<br />
+                        <button class="button ud margin-none is-small">g2</button> Sort by group 3 "cluster" in
+                        model<br />
+                        <button class="button ud margin-none is-small">feeling lucky?</button> Shuffle!<br />
+                        <br />
+                        <h1 class="content is-medium">Clicks &amp; Links</h1>
+                        <img src="images/ethereum_expl.png" class="img_legend" /> Link to project's contract on explorer
+                        <br />
+                        <img src="images/os.png" class="img_legend" /> Link to project's listing on OpenSea
+                        <br />
+                        <img src="images/occ.png" class="img_legend" /> Check on-chain status with On-Chain Checker
+                        <br />
+                        &#127777; Temperature randomizes results, when > 0, can refresh
+                        <br />
+                        <img src="images/x.png" class="img_legend" /> Fully remove a project from all results
+                    </small>
+                </section>
+                <footer class="modal-card-foot">
+                    <div class="buttons">
+                        <button class="button" onclick="closeModal();">Close</button>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <div id="modal_options" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Options</p>
+                    <button class="delete" onclick="closeModal();" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
                     <h1 class="content is-medium">Model Options</h1>
-                    <select id="model_choice" onchange="javascript:reloadMaterials();" class="select">
+                    Model<br /><select id="model_choice" onchange="javascript:reloadMaterials();" class="select">
                         <option value="0">Ethereum mainnet curated by Takens</option>
                         <option value="1">Curated with JPG(.space) data</option>
                         <option value="2">Base (L2) curated by Takens</option>
                         <option value="3">1|8453 (mixed) curated by Takens</option>
                         <option disabled>Chaos [interested?]</option>
                     </select>
-                    <br />
+                    <br /><br />
                     All models on <strong>Ethereum mainnet</strong> for now, from a curated set of collectors of over
                     1,000
                     projects, almost 100,000 transactions.
@@ -311,18 +369,6 @@
                     <br />
                     <input type="checkbox" id="exclude_bigs_switch" onclick="excludeBigs();" />
                     Auto exclude larger projects (platforms, CKs, etc.)
-                    <br /><br />
-                    <h1 class="content is-medium">Legend to Some Stuff</h1>
-                    <img src="images/ethereum_expl.png" class="img_legend" /> Link to project's contract on explorer
-                    <br />
-                    <img src="images/os.png" class="img_legend" /> Link to project's listing on OpenSea
-                    <br />
-                    <img src="images/occ.png" class="img_legend" /> Check on-chain status with On-Chain Checker
-                    <br />
-                    &#127777; Temperature randomizes results, when > 0, can refresh
-                    <br />
-                    <img src="images/x.png" class="img_legend" /> Fully remove a project from all results
-
                 </section>
                 <footer class="modal-card-foot">
                     <div class="buttons">
