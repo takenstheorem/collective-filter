@@ -43,8 +43,10 @@ function toggleStorage() {
 models = [{ 'projs': 'mainnet-projs-v.0.2.json', 'model': 'mainnet-model-v.0.2.json' },
 { 'projs': 'jpg-projs.json', 'model': 'jpg-model.json' },
 { 'projs': 'base-projs-v.0.1.json', 'model': 'base-model-v.0.1.json' },
-{ 'projs': 'mixed-projs-v.0.1.json', 'model': 'mixed-model-v.0.1.json' } ]
+{ 'projs': 'mixed-projs-v.0.1.json', 'model': 'mixed-model-v.0.1.json' }]
 async function reloadMaterials() {
+    curl = 0;
+    curr = 10;
     await fetch("json/" + models[document.getElementById('model_choice').value].projs)
         .then(response => response.json())
         .then(data => {
@@ -89,9 +91,13 @@ function updateSugg(a = '', redo = false) {
         for (let i = 0; i < projects.length; i++) {
             if (!(projects[rs[i]].address in chosen) && !(projects[rs[i]].address in excluded)) {
                 divItem = makeItem(projects[rs[i]], true, true);
-                if (rs[i] != temp[j] && temp.indexOf(rs[i]) < 0) {
+                if (rs[i] != temp[j] && temp.indexOf(rs[i]) < 0 && i % 2 == 0) {
                     divItem.classList.add('animate__animated')
                     divItem.classList.add('animate__slideInRight')
+                } else if (rs[i] != temp[j] && temp.indexOf(rs[i]) < 0 && i % 2 != 0) {
+                    divItem.classList.add('animate__animated')
+                    divItem.classList.add('animate__slideInLeft')
+
                 } else if (temp.indexOf(rs[i]) >= 0 && temp.indexOf(rs[i]) > j) {
                     divItem.classList.add('animate__animated')
                     divItem.classList.add('animate__slideInUp')
@@ -160,7 +166,7 @@ function udRes(func, redo = false) {
         curl = 0;
         curr = 10;
     } else if (func == curclick & !redo) {
-      // radv or ladv  
+        // radv or ladv  
     }
     else {
         desc = true;
@@ -216,15 +222,15 @@ function udRes(func, redo = false) {
             );
             top10Results = filteredProjects
                 .filter(project => !(project.address in excluded))
-                .slice(curl, curr);            
+                .slice(curl, curr);
         }
 
         top10Results.forEach(project => {
             const divItem = makeItem(project, true, true);
             resultDiv.appendChild(divItem);
         });
-        if (top10Results.length==10 & func!='lucky') {
-            resultDiv.innerHTML += `<div></div><div style=width:100%;text-align:right;><span class="adv" onclick="ladv();">&#11013;</span> ${curl+1} &dash; ${curr} <span class="adv" onclick="radv()">&#10145;</span></div>`;
+        if (top10Results.length == 10 & func != 'lucky') {
+            resultDiv.innerHTML += `<div></div><div style=width:100%;text-align:right;><span class="adv" onclick="ladv();">&#11013;</span> ${curl + 1} &dash; ${curr} <span class="adv" onclick="radv()">&#10145;</span></div>`;
         }
         curclick = func;
     }
@@ -232,14 +238,14 @@ function udRes(func, redo = false) {
 
 // advance left or right in search
 function ladv() {
-    if (curl>=10) {
+    if (curl >= 10) {
         curl -= 10;
         curr -= 10;
         udRes(curclick, false);
     }
 }
 function radv() {
-    if (top10Results.length==10) {
+    if (top10Results.length == 10) {
         curl += 10;
         curr += 10;
         udRes(curclick, false);
@@ -317,21 +323,21 @@ function makeItem(project, plus = true, minus = true) {
     divItem.innerHTML += checkFave(project);
     divItem.appendChild(imgItem);
 
-    divItem.innerHTML += `<img class="chain-logo" src="images/${chains[project.chainid]}_logo.png" />`;    
+    divItem.innerHTML += `<img class="chain-logo" src="images/${chains[project.chainid]}_logo.png" />`;
     //projDt = `<small style="font-size: 0.5em; opacity: 0.5;">${project.dt}</small>`;
     const dateParts = project.dt.split('-');
-    const year = parseInt(dateParts[0]); 
+    const year = parseInt(dateParts[0]);
     const month = parseInt(dateParts[1]) - 1;
     const day = parseInt(dateParts[2]);
-  
+
     let projDt = new Date(year, month, day).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
     });
 
-    projDt = '<small style="font-size: 0.5em; opacity: 0.5;">'+projDt+'</small>';
-    divItem.innerHTML += `<div class="metadata">${project.name.substring(0,30) + (project.name.length>30?'...':'')} ${projDt}</small><br /><span class="content is-small" />${contractLink(project)}</div>`;
+    projDt = '<small style="font-size: 0.5em; opacity: 0.5;">' + projDt + '</small>';
+    divItem.innerHTML += `<div class="metadata">${project.name.substring(0, 30) + (project.name.length > 30 ? '...' : '')} ${projDt}</small><br /><span class="content is-small" />${contractLink(project)}</div>`;
     return divItem;
 }
 
