@@ -391,7 +391,8 @@ function contractLink(project) {
     const expl_img = `<img src="images/${chains[project.chainid]}_expl.png" class="link-logo" />`;
     const expl_a = `${project.address.substring(0, 10)} <a href="${expl_link}" target="_blank">${expl_img}</a>`;
 
-    const os_link = `https://opensea.io/assets/${chains[project.chainid]}/${project.address}`;
+    // const os_link = `https://opensea.io/assets/${chains[project.chainid]}/${project.address}`;
+    const os_link = `https://opensea.io/collection/${project.slug}`;
     const os_img = `<img src="images/os.png" class="link-logo" />`;
     const os_a = ` <a href="${os_link}" target="_blank">${os_img}</a>`;
 
