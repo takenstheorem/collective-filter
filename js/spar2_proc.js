@@ -14,23 +14,13 @@ var excluded = {};
 var faved = {};
 var lastres = {};
 var lastreco = {};
-var curl = 0;
-var curr = 10;
+var search_curl = 0;
+var search_curr = 10;
+var sugg_curl = 0;
+var sugg_curr = 10;
 var top10Results; // tracking search results
 
 /* ____________________ data ____________________ */
-
-fetch("json/mainnet-projs-v.0.2.json")
-    .then(response => response.json())
-    .then(data => {
-        projects = data;
-    });
-
-fetch("json/mainnet-model-v.0.2.json")
-    .then(response => response.json())
-    .then(data => {
-        y = data;
-    });
 
 function toggleStorage() {
     if (document.getElementById('storage_switch').checked) {
@@ -44,9 +34,17 @@ models = [{ 'projs': 'mainnet-projs-v.0.2.json', 'model': 'mainnet-model-v.0.2.j
 { 'projs': 'jpg-projs.json', 'model': 'jpg-model.json' },
 { 'projs': 'base-projs-v.0.1.json', 'model': 'base-model-v.0.1.json' },
 { 'projs': 'mixed-projs-v.0.1.json', 'model': 'mixed-model-v.0.1.json' }]
+
+// on window load when it's done
+window.onload = function () {
+    reloadMaterials();    
+}
+
 async function reloadMaterials() {
-    curl = 0;
-    curr = 10;
+    search_curl = 0;
+    search_curr = 10;
+    sugg_curl = 0;
+    sugg_curr = 10;
     await fetch("json/" + models[document.getElementById('model_choice').value].projs)
         .then(response => response.json())
         .then(data => {
@@ -58,6 +56,8 @@ async function reloadMaterials() {
             y = data;
         });
     resetChosen();
+    await excludeBigs();
+    udRes('ts', true);
 }
 
 /* ____________________ functions ____________________ */
@@ -88,7 +88,7 @@ function updateSugg(a = '', redo = false) {
         } else {
             temp = [...suggested];
         }
-        for (let i = 0; i < projects.length; i++) {
+        for (let i = sugg_curl; i < projects.length; i++) {
             if (!(projects[rs[i]].address in chosen) && !(projects[rs[i]].address in excluded)) {
                 divItem = makeItem(projects[rs[i]], true, true);
                 if (rs[i] != temp[j] && temp.indexOf(rs[i]) < 0 && i % 2 == 0) {
@@ -108,9 +108,10 @@ function updateSugg(a = '', redo = false) {
                 suggested[j] = rs[i];
                 document.getElementById('sugg_content').append(divItem);
                 j++;
-                if (j > 9) {
+                if (j > 9) {                    
+                    document.getElementById('sugg_content').innerHTML += `<div></div><div style=width:100%;text-align:right;><span class="adv" onclick="sugg_ladv();">&#11013;</span> ${sugg_curl + 1} &dash; ${sugg_curr} <span class="adv" onclick="sugg_radv()">&#10145;</span></div>`;
                     break;
-                }
+                }                 
             }
         }
         lastreco = [...suggested];
@@ -163,15 +164,15 @@ function udRes(func, redo = false) {
     const resultDiv = document.getElementById('result_div');
     if (func == curclick & redo) {
         desc = !desc;
-        curl = 0;
-        curr = 10;
+        search_curl = 0;
+        search_curr = 10;
     } else if (func == curclick & !redo) {
         // radv or ladv  
     }
     else {
         desc = true;
-        curl = 0;
-        curr = 10;
+        search_curl = 0;
+        search_curr = 10;
     }
 
     const elementsWithUDClass = document.querySelectorAll('.ud');
@@ -195,7 +196,7 @@ function udRes(func, redo = false) {
                 arrow = '&uarr;'
             }
             document.getElementById(func + '_btn').innerHTML = btns[func] + arrow;
-            top10Results = temp.slice(curl, curr);
+            top10Results = temp.slice(search_curl, search_curr);
         } else if (func == 'lucky') {
             document.getElementById(func + '_btn').classList.add('is-active');
             if (redo) {
@@ -211,7 +212,7 @@ function udRes(func, redo = false) {
                 top10Results = randomIndices
                     .filter(index => !(projects[index].address in excluded))
                     .sort((a, b) => projects[a][func] - projects[b][func])
-                    .slice(curl, curr)
+                    .slice(search_curl, search_curr)
                     .map(index => projects[index]);
                 lastres = top10Results;
             }
@@ -222,7 +223,7 @@ function udRes(func, redo = false) {
             );
             top10Results = filteredProjects
                 .filter(project => !(project.address in excluded))
-                .slice(curl, curr);
+                .slice(search_curl, search_curr);
         }
 
         top10Results.forEach(project => {
@@ -230,25 +231,39 @@ function udRes(func, redo = false) {
             resultDiv.appendChild(divItem);
         });
         if (top10Results.length == 10 & func != 'lucky') {
-            resultDiv.innerHTML += `<div></div><div style=width:100%;text-align:right;><span class="adv" onclick="ladv();">&#11013;</span> ${curl + 1} &dash; ${curr} <span class="adv" onclick="radv()">&#10145;</span></div>`;
+            resultDiv.innerHTML += `<div></div><div style=width:100%;text-align:right;><span class="adv" onclick="search_ladv();">&#11013;</span> ${search_curl + 1} &dash; ${search_curr} <span class="adv" onclick="search_radv()">&#10145;</span></div>`;
         }
         curclick = func;
     }
 }
 
 // advance left or right in search
-function ladv() {
-    if (curl >= 10) {
-        curl -= 10;
-        curr -= 10;
+function search_ladv() {
+    if (search_curl >= 10) {
+        search_curl -= 10;
+        search_curr -= 10;
         udRes(curclick, false);
     }
 }
-function radv() {
+function search_radv() {
     if (top10Results.length == 10) {
-        curl += 10;
-        curr += 10;
+        search_curl += 10;
+        search_curr += 10;
         udRes(curclick, false);
+    }
+}
+function sugg_ladv() {
+    if (sugg_curl >= 10) {
+        sugg_curl -= 10;
+        sugg_curr -= 10;        
+        updateSugg('', false);
+    }
+}
+function sugg_radv() {
+    if (sugg_curl < sugg_curr) {
+        sugg_curl += 10;
+        sugg_curr += 10;        
+        updateSugg('', false);
     }
 }
 
@@ -403,14 +418,15 @@ function contractLink(project) {
     return expl_a + os_a + occ_a;
 }
 
-function resetChosen() {
+async function resetChosen() {
     chosen = {};
     excluded = {};
+    await excludeBigs();
     suggested = [];
-    document.getElementById('exclude_bigs_switch').checked = null;
+    // document.getElementById('exclude_bigs_switch').checked = null;
     document.getElementById('result_div').innerHTML = '';
     if (curclick != '') {
-        desc = !desc;
+        // desc = !desc;
         udRes(curclick);
     }
     document.getElementById('count_badge').innerText = 0;
@@ -475,7 +491,7 @@ function setOption(e, v) {
 
 async function excludeBigs() {
     var refprojs;
-    await fetch("json/curated-projs-v.0.1.json")
+    await fetch('json/' + models[0].projs)
         .then(response => response.json())
         .then(data => {
             refprojs = data;
@@ -491,7 +507,7 @@ async function excludeBigs() {
             }
         }
     }
-    udRes(curclick, true);
+    udRes(curclick, false);
     updateSugg('', false);
 }
 
@@ -503,4 +519,65 @@ function removeEntry(obj, keyToRemove) {
         }
     }
     return newObj;
+}
+
+async function preloadWallet() {
+    let address = document.getElementById('address_preload_txt').value;
+    if (address.length > 0) {
+        document.getElementById('preload_status').innerText = 'loading...';
+        const options = { method: 'GET', headers: { accept: 'application/json' } };
+        var temp = [...projects];
+        temp = temp.filter(item => !(item.address in excluded)).sort((a, b) => b['connection'] - a['connection']);
+
+        if (document.getElementById('model_choice').value in [0, 1]) {
+            chain = 'eth';
+        } else if (document.getElementById('model_choice').value == 2) {
+            chain = 'base';
+            if (address.substring(0, 2) != '0x') {
+                document.getElementById('preload_status').innerText = 'ENS resolver only available for mainnet.';
+                return;
+            }
+        } else {
+            document.getElementById('preload_status').innerText = 'Preload available for this model.';
+            return;
+        }
+        document.getElementById('preload_button').disabled = true;
+
+        found = 0;
+        added = {};
+
+        var chunks = Math.floor(temp.length/45);
+        for (let i = 0; i < chunks; i++) {
+            var contract_string = temp.map(item => item['address']).slice(i*45, (i+1)*45);
+            contract_string = contract_string.join('&contractAddresses[]=');
+            await fetch(`https://${chain}-mainnet.g.alchemy.com/v2/yQIn2v-52S5IEE-JjzJUx0HoFFSpvE2k/getNFTsForOwner?owner=${address}&withMetadata=false${contract_string}&pageSize=100`, options)
+                .then(response => response.json())
+                .then((response) => {
+                    document.getElementById('suggest').scrollIntoView();                    
+                    response.ownedNfts.forEach((nft) => {
+                        present = projects[projects.findIndex(entry => entry['address'] === nft.contract.address)];
+                        if (present && !(nft.contract.address in excluded) && !(nft.contract.address in added)) {
+                            if (found == 0) {
+                                chosen = {};
+                                suggested = [];
+                            }
+                            added[nft.contract.address] = true;
+                            updateSugg(nft.contract.address, false);
+                            found++;
+                        }
+                    });
+                    if (found > 0) document.getElementById('preload_status').innerText = `Added ${found} projects.`;
+                })
+                .catch((err) => {
+                    console.error(err)
+                    document.getElementById('preload_status').innerHTML = ` <font color="red">Error: ${err}</font>.`;
+                });
+        }
+        if (found > 0) {
+            document.getElementById('preload_status').innerText = `Done. Added ${found} projects.`;
+        } else {
+            document.getElementById('preload_status').innerText = `Done. Owned NFTs not in snapshot.`;                    
+        }
+        setTimeout(function () { document.getElementById('preload_button').disabled = false; }, 4000);
+    }
 }

@@ -58,15 +58,14 @@
                                 title="view favorites">
                                 &#9829;
                             </span>
-                            <span class="tag is-small is-white pointer" onclick="javascript:showHelp();"
-                                title="view help">
-                                &#63;
-                            </span>
                         </p>
-                        <p class="content is-secondary">Search by using the text box or search buttons (such as 'dt' which sorts search by date of project). Then, choose some of your favorite projects by clicking <img
-                                src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" /> and adding
+                        <p class="content is-secondary">Search by using the text box or search buttons (such as 'dt'
+                            which sorts search by date of project). Then, choose some of your favorite projects by
+                            clicking <img src="images/plus.jpg" style="height:15px;width:auto;border-radius:1000px;" />
+                            and adding
                             them to the "selected" list. This selected list is used to populate project suggestions when
                             you click the "view suggestions" button below.</p>
+                        <small>Sort by</small>
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('ts', true);"
                             title="by most recent in snapshot" id="ts_btn">DT</button>
                         <button class="button ud margin-bottom is-small"
@@ -84,6 +83,9 @@
                             title="statistical group 3 in model" id="g3_btn">G3</button>
                         <button class="button ud margin-bottom is-small" onclick="javascript:udRes('lucky');"
                             title="shuffle!" id="lucky_btn">feel lucky?</button>
+                        <span class="tag is-small is-white pointer" onclick="javascript:showHelp();" title="view help">
+                            &#63;
+                        </span>
                         <input class="input is-info mb-4" id="search_txt" autocomplete="off" type="text"
                             placeholder="search by name, hit enter" />
                         <div class="fixed-grid has-2-columns">
@@ -101,7 +103,7 @@
     <section class="hero is-fullheight has-background-black" id="suggest">
         <div class="section fixed-grid">
             <div class="">
-                <div class="">
+                <div class="container">
                     <p class="content is-primary is-large has-text-white">
                         <b>Suggestion by Projection</b> &nbsp;
                         <button class="tag is-small" onclick="showSelectedModal();"
@@ -118,7 +120,8 @@
                     <p class="content is-secondary">These "suggestions" are based on a small data snapshot and a
                         machine-learning model. See <a href="#faqs" class="main-nav">FAQs</a> for more details, and
                         click "refine" to go back to the search panel, or "reset" to start over the selection process.
-                        Click the temperature &#x21bb;&#127777; button to refresh the suggestions, or adjust the temperature to increase the randomness of these suggestions.
+                        Click the temperature &#x21bb;&#127777; button to refresh the suggestions, or adjust the
+                        temperature to increase the randomness of these suggestions.
                     </p>
                     <div style="display:flex;align-items:center;" class="mb-3">
                         <button onclick="updateSugg();">&#x21bb;</button>
@@ -180,7 +183,8 @@
                             other NFT projects. <strong>It's built from a subset of data, just a snapshot, so it won't
                                 have all your favorite projects. Currently, it only contains data from Ethereum
                                 mainnet</strong>,
-                            and is based on 100,000 transactions from 1,000 projects. Using this data snapshot, the
+                            and is based on thousands of transactions from hundreds of projects. Using this data
+                            snapshot, the
                             model maps your selected interests to other projects. These suggested projects
                             reflect collective activity of other collectors. Credits:
                             Data from <a target="_blank" href="https://etherscan.io/">Etherscan</a>, <a
@@ -277,6 +281,7 @@
 
                         <p style="font-family:courier;color:white;" id="updates">
                             <b><big>Update history</big></b><br />
+                            v0.4 - 3/10/25 - Added wallet preloading<br />
                             v0.33 - 3/07/25 - Fixed OS links for OS2 constraints<br />
                             v0.32 - 3/02/25 - Updated all curated models<br />
                             v0.31 - 2/09/25 - Stacked selection &amp; suggestion; fine tunings<br />
@@ -310,21 +315,27 @@
                         I may consider letting users connect their wallet in future updates.
                         <br /><br />
                         <h1 class="content is-medium">Search Tools</h1>
-                        <button class="button ud margin-none is-small">dt</button> Sort selectable projects by
+                        <button class="button ud is-small" style="margin-bottom:2px;">dt</button> Sort selectable
+                        projects by
                         date<br />
-                        <button class="button ud margin-none is-small">uo</button> Sort by # users in data
+                        <button class="button ud is-small" style="margin-bottom:2px;">uo</button> Sort by # users in
+                        data
                         snapshot<br />
-                        <button class="button ud margin-none is-small">tx</button> Sort by # txs in data
+                        <button class="button ud is-small" style="margin-bottom:2px;">tx</button> Sort by # txs in data
                         snapshot<br />
-                        <button class="button ud margin-none is-small">cx</button> Sort by project's connectivity
+                        <button class="button ud is-small" style="margin-bottom:2px;">cx</button> Sort by project's
+                        connectivity
                         metric<br />
-                        <button class="button ud margin-none is-small">g1</button> Sort by group 1 "cluster" in
+                        <button class="button ud is-small" style="margin-bottom:2px;">g1</button> Sort by group 1
+                        "cluster" in
                         model<br />
-                        <button class="button ud margin-none is-small">g2</button> Sort by group 2 "cluster" in
+                        <button class="button ud is-small" style="margin-bottom:2px;">g2</button> Sort by group 2
+                        "cluster" in
                         model<br />
-                        <button class="button ud margin-none is-small">g2</button> Sort by group 3 "cluster" in
+                        <button class="button ud is-small" style="margin-bottom:2px;">g3</button> Sort by group 3
+                        "cluster" in
                         model<br />
-                        <button class="button ud margin-none is-small">feeling lucky?</button> Shuffle!<br />
+                        <button class="button ud is-small">feeling lucky?</button> Shuffle!<br />
                         <br />
                         <h1 class="content is-medium">Clicks &amp; Links</h1>
                         <img src="images/ethereum_expl.png" class="img_legend" /> Link to project's contract on explorer
@@ -355,6 +366,12 @@
                 </header>
                 <section class="modal-card-body">
                     <h1 class="content is-medium">Model Options</h1>
+                    Preload a collector's holdings<sup>beta</sup><br />
+                    <input class="input" id="address_preload_txt" autocomplete="off" type="text"
+                        placeholder="enter an address here" />
+                    <button class="button is-small" id="preload_button" style="margin-top:5px;" onclick="javascript:preloadWallet();">try</button>
+                    <span class="tag is-small" style="margin-top:5px;" id="preload_status"></span>
+                    <br /><br />
                     Model<br /><select id="model_choice" onchange="javascript:reloadMaterials();" class="select">
                         <option value="0">Ethereum mainnet curated by Takens</option>
                         <option value="1">Curated with JPG(.space) data</option>
@@ -372,7 +389,7 @@
                     Save favorites in <a target="_blank"
                         href="https://en.wikipedia.org/wiki/Web_storage">localStorage</a>
                     <br />
-                    <input type="checkbox" id="exclude_bigs_switch" onclick="excludeBigs();" />
+                    <input type="checkbox" id="exclude_bigs_switch" onclick="excludeBigs();" checked />
                     Auto exclude larger projects (platforms, CKs, etc.)
                 </section>
                 <footer class="modal-card-foot">
