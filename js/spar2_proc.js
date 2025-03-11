@@ -97,7 +97,6 @@ function updateSugg(a = '', redo = false) {
                 } else if (rs[i] != temp[j] && temp.indexOf(rs[i]) < 0 && i % 2 != 0) {
                     divItem.classList.add('animate__animated')
                     divItem.classList.add('animate__slideInLeft')
-
                 } else if (temp.indexOf(rs[i]) >= 0 && temp.indexOf(rs[i]) > j) {
                     divItem.classList.add('animate__animated')
                     divItem.classList.add('animate__slideInUp')
@@ -111,8 +110,9 @@ function updateSugg(a = '', redo = false) {
                 if (j > 9) {                    
                     document.getElementById('sugg_content').innerHTML += `<div></div><div style=width:100%;text-align:right;><span class="adv" onclick="sugg_ladv();">&#11013;</span> ${sugg_curl + 1} &dash; ${sugg_curr} <span class="adv" onclick="sugg_radv()">&#10145;</span></div>`;
                     break;
-                }                 
+                }  
             }
+            console.log(suggested);
         }
         lastreco = [...suggested];
         document.getElementById('view_suggestions_btn').style.visibility = 'visible';
@@ -203,7 +203,7 @@ function udRes(func, redo = false) {
                 top10Results = lastres;
             } else {
                 const randomIndices = [];
-                while (randomIndices.length < 10) {
+                while (randomIndices.length < 20) {
                     const randomIndex = getRandomInt(0, projects.length - 1);
                     if (!randomIndices.includes(randomIndex)) {
                         randomIndices.push(randomIndex);
@@ -213,7 +213,8 @@ function udRes(func, redo = false) {
                     .filter(index => !(projects[index].address in excluded))
                     .sort((a, b) => projects[a][func] - projects[b][func])
                     .slice(search_curl, search_curr)
-                    .map(index => projects[index]);
+                    .map(index => projects[index])
+                    .slice(0, 10);
                 lastres = top10Results;
             }
         } else {
@@ -423,6 +424,8 @@ async function resetChosen() {
     excluded = {};
     await excludeBigs();
     suggested = [];
+    sugg_curl = 0;
+    sugg_curr = 10;
     // document.getElementById('exclude_bigs_switch').checked = null;
     document.getElementById('result_div').innerHTML = '';
     if (curclick != '') {
@@ -575,6 +578,7 @@ async function preloadWallet() {
         }
         if (found > 0) {
             document.getElementById('preload_status').innerText = `Done. Added ${found} projects.`;
+            document.getElementById('count_badge').innerText = `${address.substring(0, 10)}'s collection (${found})`;
         } else {
             document.getElementById('preload_status').innerText = `Done. Owned NFTs not in snapshot.`;                    
         }
