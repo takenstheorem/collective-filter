@@ -71,6 +71,6 @@ function addUpdate(event) {
         updateSugg(event.target.attributes.data.value,false);
         event.target.parentElement.style.backgroundColor = "#112255";
         event.target.style.display = 'none';
-        udRes(curclick, false);
+        udRes(curclick, curclick == 'lucky' ? true : false);
     }
 }
