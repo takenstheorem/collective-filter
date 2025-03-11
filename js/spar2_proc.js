@@ -406,7 +406,6 @@ function contractLink(project) {
     const expl_img = `<img src="images/${chains[project.chainid]}_expl.png" class="link-logo" />`;
     const expl_a = `${project.address.substring(0, 10)} <a href="${expl_link}" target="_blank">${expl_img}</a>`;
 
-    // const os_link = `https://opensea.io/assets/${chains[project.chainid]}/${project.address}`;
     const os_link = `https://opensea.io/collection/${project.slug}`;
     const os_img = `<img src="images/os.png" class="link-logo" />`;
     const os_a = ` <a href="${os_link}" target="_blank">${os_img}</a>`;
@@ -577,8 +576,8 @@ async function preloadWallet() {
         }
         if (found > 0) {
             document.getElementById('preload_status').innerText = `Done. Added ${found} projects.`;
-            document.getElementById('count_badge').innerText = `${address.substring(0, 10)}'s collection (${found})`;
             let viewed_addr = address.substring(0,2) == '0x' ? address.substring(0, 6) : address;
+            document.getElementById('count_badge').innerText = `${viewed_addr}'s collection (${found})`;
             document.getElementById('count_badge_2').innerText = `${viewed_addr}'s collection (${found})`;
         } else {
             document.getElementById('preload_status').innerText = `Done. Owned NFTs not in snapshot.`;                    
