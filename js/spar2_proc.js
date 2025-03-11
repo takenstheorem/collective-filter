@@ -578,7 +578,8 @@ async function preloadWallet() {
         if (found > 0) {
             document.getElementById('preload_status').innerText = `Done. Added ${found} projects.`;
             document.getElementById('count_badge').innerText = `${address.substring(0, 10)}'s collection (${found})`;
-            document.getElementById('count_badge_2').innerText = `${address.substring(0, 10)}'s collection (${found})`;
+            let viewed_addr = address.substring(0,2) == '0x' ? address.substring(0, 6) : address;
+            document.getElementById('count_badge_2').innerText = `${viewed_addr}'s collection (${found})`;
         } else {
             document.getElementById('preload_status').innerText = `Done. Owned NFTs not in snapshot.`;                    
         }
